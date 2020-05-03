@@ -1,0 +1,70 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+buildscript {
+    
+    repositories {
+        google()
+        jcenter()
+        mavenCentral()
+        
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.6.3'
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+plugins {
+    id "com.lazan.dependency-export" version "0.5"
+    // id 'io.pry.gradle.offline_dependencies' version '0.5.0'
+    // id "org.ysb33r.ivypot" version "0.12" apply false
+}
+
+mavenDependencyExport {
+    exportDir = new File("C:\\Package\\m2")
+    systemProperties = ['java.version': '1.8']
+    exportSources = true
+}
+
+task buildRepo {
+    dependsOn 'mavenDependencyExport'
+    dependsOn ':app:downloadAppDependencies'
+}
+
+// task runSync {
+
+//     ext {
+//         exists = { String grp, String name, String ver ->
+//             File f = new File(repoDir,"${grp}/${name}/${ver}/${name}-${ver}.jar")
+//             if(!f.exists()) {
+//                 throw new GradleException("Could not locate ${f.absolutePath}")
+//             }
+//         }
+//     }
+
+//     dependsOn ':sync:syncRemoteRepositories'
+
+//     doLast {
+//         exists 'com.android.tools.build', 'gradle', '3.6.3'
+//     }
+// }
+
+allprojects {
+
+    ext {
+        offlineRepoDir = 'C:\\Package\\tm2\\'
+    }
+
+    repositories {
+
+        google()
+        jcenter()
+        mavenCentral()
+        
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
