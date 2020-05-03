@@ -3,6 +3,8 @@ Project with scripts that can download everything needed to run android studio o
 
 Make sure you have plenty of hard drive space (~25GB) before running this. I don't know what will happen if you don't have enough space.
 
+There are not progress bars on all the downloads, so if you think the script froze just be patient and wait for a little bit.
+
 ## How to use this project
 1. Run the create_package.ps1 powershell script. You will have to accept sdk licenses so don't just abandon the script after starting it. There are two commands that download the parts of the sdk so expect that you will have to accept the licenses twice. The second command downloads some extras, HAXM, and older versions of the sdk in order to build to earlier versions.
 
