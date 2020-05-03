@@ -27,7 +27,9 @@ Make sure you have plenty of hard drive space (~25GB) before running this. I don
 2. Run the cleanpc.ps1 powershell script (if there are any errors just go to Your User Home Folder, and ensure the following are deleted: ".android", ".AndroidStudio3.6", ".gradle")
 These have caches in them, so we want to start clean to ensure things are working properly.
 
-3. Run the install_package.ps1 powershell script.
+3. Turn on Airplane mode/ disconnect from the network
 
-4. Open Android studio from studio64.exe located in C:\Package\android-studio-ide-192.6392135-windows\android-studio\bin
+4. Run the install_package.ps1 powershell script.
+
+5. Open Android studio from studio64.exe located in C:\Package\android-studio-ide-192.6392135-windows\android-studio\bin
   (You may want to create a shortcut to this)
