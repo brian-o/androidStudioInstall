@@ -6,7 +6,7 @@ Make sure you have plenty of hard drive space (~25GB) before running this. I don
 There are not progress bars on all the downloads, so if you think the script froze just be patient and wait for a little bit.
 
 ## How to use this project
-1. Run the create_package.ps1 powershell script. You will have to accept sdk licenses so don't just abandon the script after starting it. There are two commands that download the parts of the sdk so expect that you will have to accept the licenses twice. The second command downloads some extras, HAXM, and older versions of the sdk in order to build to earlier versions.
+1. Run the create_package.ps1 powershell script. You will have to accept sdk licenses so don't just abandon the script after starting it. Once the licenses are accepted the script can be left to do its job. These licenses will include the standard sdk license, the beta license, and the HAXM license.
 
 2. Copy the folder C:\Package\ to the offline machine (reccommend zipping it before doing so (if using 7zip or some other faster zip tools) to increase transfer speed to/from the removable media.
 
@@ -24,7 +24,8 @@ There are not progress bars on all the downloads, so if you think the script fro
 
 ## How to test this on a single machine
 
-1. Run the create_package.ps1 powershell script. You will have to accept sdk licenses so don't just abandon the script after starting it. There are two commands that download the parts of the sdk so expect that you will have to accept the licenses twice. The second command downloads some extras, HAXM, and older versions of the sdk in order to build to earlier versions.
+1. 1. Run the create_package.ps1 powershell script. You will have to accept sdk licenses so don't just abandon the script after starting it. Once the licenses are accepted the script can be left to do its job. These licenses will include the standard sdk license, the beta license, and the HAXM license.
+
 
 2. Run the cleanpc.ps1 powershell script (if there are any errors just go to Your User Home Folder, and ensure the following are deleted: ".android", ".AndroidStudio3.6", ".gradle")
 These have caches in them, so we want to start clean to ensure things are working properly.
