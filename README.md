@@ -5,6 +5,11 @@ Make sure you have plenty of hard drive space (~25GB) before running this. I don
 
 There are not progress bars on all the downloads, so if you think the script froze just be patient and wait for a little bit.
 
+This script will check for existing files in C:\Package\ and won't download them again if they already exist. It doesn't do an in depth check though, so if the file is corrupted, delete it and it will be re-downloaded.
+
+If all else fails delete everything in C:\Package\ and delete .android .androidStudio3.6 and .gradle inside of USER_HOME
+then re-run the script
+
 ## How to use this project
 1. Run the create_package.ps1 powershell script. You will have to accept sdk licenses so don't just abandon the script after starting it. Once the licenses are accepted the script can be left to do its job. These licenses will include the standard sdk license, the beta license, and the HAXM license.
 
@@ -24,7 +29,7 @@ There are not progress bars on all the downloads, so if you think the script fro
 
 ## How to test this on a single machine
 
-1. 1. Run the create_package.ps1 powershell script. You will have to accept sdk licenses so don't just abandon the script after starting it. Once the licenses are accepted the script can be left to do its job. These licenses will include the standard sdk license, the beta license, and the HAXM license.
+1. Run the create_package.ps1 powershell script. You will have to accept sdk licenses so don't just abandon the script after starting it. Once the licenses are accepted the script can be left to do its job. These licenses will include the standard sdk license, the beta license, and the HAXM license.
 
 
 2. Run the cleanpc.ps1 powershell script (if there are any errors just go to Your User Home Folder, and ensure the following are deleted: ".android", ".AndroidStudio3.6", ".gradle")
