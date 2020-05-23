@@ -33,6 +33,5 @@ jobs:
         echo test, and deploy your project.
         
     - name: Run the clean script for testing
-      run: |
-        cd $GITHUB_WORKSPACE
-        .\cleanpc.ps1
+      run: .\cleanpc.ps1
+      shell: powershell
