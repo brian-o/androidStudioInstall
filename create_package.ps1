@@ -1,4 +1,28 @@
+param (
+    [switch]$small = $false,
+    [switch]$noOfflineComponents = $false,
+    [string]$output_root = "C:\Package\"
+)
 # This is where we want to output the results of our scripts so it can easily be copied to other machines
+# ensure output root has '\' at the end of it
+if ($output_root -notmatch '\\$') {
+    $output_root += '\'
+}
+
+if ($small) {
+    Write-Output "This run will build a small Version of sdk"
+}
+else {
+    Write-Output "This run will build a full verison of the sdk"
+}
+if ($noOfflineComponents) {
+    Write-Output "This run will not download offline maven, or android gradle"
+}
+else {
+    Write-Output "This run will download all offline components"
+}
+Write-Output "This run will place the outputs in $output_root"
+
 Write-Output "WARNING *******************************************************************\n\r\n\r"
 Write-Output "This script checks if certain folders exists to skip having to download files multiple times"
 Write-Output "If you think a file was not copmletely downloaded, make sure it is deleted or the script may not work properly."
@@ -12,29 +36,27 @@ Write-Output "If you have any doubts about your package, run the cleanpc.ps1 and
 Write-Output "End Warning **********************************************************************\n\r\n\r"
 
 $start_location = Get-Location
-
-$output_root = "C:\Package\"
 if(!(Test-Path $output_root)) {
     mkdir $output_root
 }
 else {
-    Write-Output "$output_root already exists. Skipping..."
+    Write-Output "$($output_root) already exists. Skipping..."
 }
 
 
 # Copy project and install script to destination package
-robocopy .\DepProject\ "C:\Package\DepProject" /e
-robocopy .\DepProjectKotlin\ "C:\Package\DepProjectKotlin" /e
-# Copy-Item -Path .\DepProject -Destination "C:\Package\DepProject" -Recurse
-# robocopy .\install_package.ps1 "C:\Package"
+robocopy .\DepProject\ "$($output_root)DepProject" /e
+robocopy .\DepProjectKotlin\ "$($output_root)DepProjectKotlin" /e
+# Copy-Item -Path .\DepProject -Destination "$($output_root)DepProject" -Recurse
+# robocopy .\install_package.ps1 "$($output_root)"
 if(![System.IO.File]::Exists(".\install_package.ps1")) {
-    Copy-Item -Path .\install_package.ps1 -Destination "C:\Package\"
+    Copy-Item -Path .\install_package.ps1 -Destination "$($output_root)"
 } else {
     Write-Output "install_package.ps1 already exists. Skipping..."
 }
 
-robocopy .\.AndroidStudio3.6\ "C:\Package\.AndroidStudio3.6" /e
-# Copy-Item -Path .\.AndroidStudio3.6 -Destination "C:\Package\.AndroidStudio3.6" -Recurse
+robocopy .\.AndroidStudio3.6\ "$($output_root).AndroidStudio3.6" /e
+# Copy-Item -Path .\.AndroidStudio3.6 -Destination "$($output_root).AndroidStudio3.6" -Recurse
 
 # move to the output location
 Set-Location $output_root
@@ -47,15 +69,15 @@ $android_studio_folder = $output_root + "android-studio-ide-192.6392135-windows\
 $gradle_url = "https://services.gradle.org/distributions/gradle-6.3-all.zip"
 $gradle_filename = $output_root + "gradle-6.3-all.zip"
 $gradle_folder = $output_root + "gradle-6.3-all\"
-$gradle = $gradle_folder + "\gradle-6.3\bin\gradle"
+# $gradle = $gradle_folder + "\gradle-6.3\bin\gradle"
 
 $gradle_plugin_url = "https://dl.google.com/android/studio/plugins/android-gradle/preview/offline-android-gradle-plugin-preview.zip"
 $gradle_plugin_filename = $output_root + "offline-android-gradle-plugin-preview.zip"
-$gradle_plugin_folder = $output_root + "offline-android-gradle-plugin-preview\"
+# $gradle_plugin_folder = $output_root + "offline-android-gradle-plugin-preview\"
 
 $offline_maven_url = "https://dl.google.com/android/studio/maven-google-com/stable/offline-gmaven-stable.zip"
 $offline_maven_filename = $output_root + "offline-gmaven-stable.zip"
-$offline_maven_folder = $output_root + "offline-gmaven-stable\"
+# $offline_maven_folder = $output_root + "offline-gmaven-stable\"
 
 $command_line_tools_url = "https://dl.google.com/android/repository/commandlinetools-win-6200805_latest.zip"
 $command_line_tools_filename = $output_root + "commandlinetools-win-6200805_latest.zip"
@@ -81,7 +103,7 @@ if(!(Test-Path $android_studio_folder)) {
 
 # Now download the command line tools so we can download the sdk
 # This command should block until it is complete
-if(!(Test-Path "C:\Package\Sdk")) {
+if(!(Test-Path "$($output_root)Sdk")) {
     Write-Output "Downloading $command_line_tools_url"
     $web_client.DownloadFile($command_line_tools_url, $command_line_tools_filename)
     Write-Output "Unzipping $command_line_tools_filename"
@@ -96,8 +118,16 @@ if(!(Test-Path "C:\Package\Sdk")) {
     # extra sdk install
     # & "$sdkman" --sdk_root="Sdk" "build-tools;24.0.3" "build-tools;30.0.0-rc2" "extras;intel;Hardware_Accelerated_Execution_Manager" "ndk-bundle" "ndk;20.1.5948944" "platforms;android-24" "platforms;android-25" "platforms;android-26" "platforms;android-27" "platforms;android-28" "platforms;android-R" "sources;android-24" "sources;android-25" "sources;android-26" "sources;android-27" "sources;android-28" "system-images;android-29;default;x86_64" "system-images;android-29;google_apis;x86_64"
 
-    # full sdk install so you only have to accept the set of licenses once
-    & "$sdkman" --sdk_root="Sdk" "add-ons;addon-google_apis-google-24" "build-tools;29.0.3" "cmdline-tools;latest" "emulator" "extras;android;m2repository" "extras;google;google_play_services" "extras;google;instantapps" "extras;google;m2repository" "extras;google;simulators" "extras;google;usb_driver" "extras;google;webdriver" "extras;m2repository;com;android;support;constraint;constraint-layout-solver;1.0.2" "extras;m2repository;com;android;support;constraint;constraint-layout;1.0.2" "patcher;v4" "platform-tools" "platforms;android-29" "sources;android-29" "build-tools;24.0.3" "build-tools;30.0.0-rc2" "extras;intel;Hardware_Accelerated_Execution_Manager" "ndk-bundle" "ndk;20.1.5948944" "platforms;android-24" "platforms;android-25" "platforms;android-26" "platforms;android-27" "platforms;android-28" "platforms;android-R" "sources;android-24" "sources;android-25" "sources;android-26" "sources;android-27" "sources;android-28" "system-images;android-29;default;x86_64" "system-images;android-29;google_apis;x86_64"
+    # only install current sdk if small is selected
+    if ($small) {
+        # basic sdk install
+        Write-Output "y" | & "$sdkman" --sdk_root="Sdk" "add-ons;addon-google_apis-google-24" "build-tools;29.0.3" "cmdline-tools;latest" "emulator" "extras;android;m2repository" "extras;google;google_play_services" "extras;google;instantapps" "extras;google;m2repository" "extras;google;simulators" "extras;google;usb_driver" "extras;google;webdriver" "extras;m2repository;com;android;support;constraint;constraint-layout-solver;1.0.2" "extras;m2repository;com;android;support;constraint;constraint-layout;1.0.2" "patcher;v4" "platform-tools" "platforms;android-29" "sources;android-29"
+
+    }
+    else {
+        # full sdk install so you only have to accept the set of licenses once
+        & "$sdkman" --sdk_root="Sdk" "add-ons;addon-google_apis-google-24" "build-tools;29.0.3" "cmdline-tools;latest" "emulator" "extras;android;m2repository" "extras;google;google_play_services" "extras;google;instantapps" "extras;google;m2repository" "extras;google;simulators" "extras;google;usb_driver" "extras;google;webdriver" "extras;m2repository;com;android;support;constraint;constraint-layout-solver;1.0.2" "extras;m2repository;com;android;support;constraint;constraint-layout;1.0.2" "patcher;v4" "platform-tools" "platforms;android-29" "sources;android-29" "build-tools;24.0.3" "build-tools;30.0.0-rc2" "extras;intel;Hardware_Accelerated_Execution_Manager" "ndk-bundle" "ndk;20.1.5948944" "platforms;android-24" "platforms;android-25" "platforms;android-26" "platforms;android-27" "platforms;android-28" "platforms;android-R" "sources;android-24" "sources;android-25" "sources;android-26" "sources;android-27" "sources;android-28" "system-images;android-29;default;x86_64" "system-images;android-29;google_apis;x86_64"
+    }
 
     # After downloading the sdk we don't need these anymore
     Remove-Item $command_line_tools_filename
@@ -106,38 +136,44 @@ if(!(Test-Path "C:\Package\Sdk")) {
     Write-Output "sdk already exists. skipping..."
 }
 
-$plugin_flag_file = "C:\Package\plugin_downloaded.txt"
-if(!(Test-Path $plugin_flag_file)) {
+$plugin_flag_file = "$($output_root)plugin_downloaded.txt"
+if($noOfflineComponents -or (Test-Path $plugin_flag_file)) {
+    if ($noOfflineComponents) {
+        Write-Output "No Offline Components flag set"
+    }
+    Write-Output "$gradle_plugin_filename appears to have been downloaded since $plugin_flag_file exists."
+    Write-Output "Skipping operation. If this is an error, simply delete $pluging_flag_file"
+} else {
     Write-Output "Downloading $gradle_plugin_url"
     Write-Output "Downloading $gradle_plugin_url" > $plugin_flag_file
     $web_client.DownloadFile($gradle_plugin_url, $gradle_plugin_filename)
     Write-Output "Unzipping $gradle_plugin_filename"
-    Expand-Archive -Path $gradle_plugin_filename -DestinationPath "C:\Package\temp" -Force
-    Set-Location "C:\Package\temp\*"
-    robocopy .\ "C:\Package\m2" /e /move
-    # Move-Item -Path * -Destination "C:\Package\m2" -Force
+    Expand-Archive -Path $gradle_plugin_filename -DestinationPath "$($output_root)temp" -Force
+    Set-Location "$($output_root)temp\*"
+    robocopy .\ "$($output_root)m2" /e /move
+    # Move-Item -Path * -Destination "$($output_root)m2" -Force
     Set-Location $output_root
-    Remove-Item "C:\Package\temp" -Recurse -Force
-} else {
-    Write-Output "$gradle_plugin_filename appears to have been downloaded since $plugin_flag_file exists."
-    Write-Output "Skipping operation. If this is an error, simply delete $pluging_flag_file"
+    Remove-Item "$($output_root)temp" -Recurse -Force
 }
 Set-Location $output_root
-$maven_flag_file = "C:\Package\maven_downloaded.txt"
-if(!(Test-Path $maven_flag_file)) {
+$maven_flag_file = "$($output_root)maven_downloaded.txt"
+if($noOfflineComponents -or (Test-Path $maven_flag_file)) {
+    if ($noOfflineComponents) {
+        Write-Output "No Offline Components flag set"
+    }
+    Write-Output "$offline_maven_filename appears to have been downloaded since $maven_flag_file exists."
+    Write-Output "Skipping operation. If this is an error, simply delete $maven_flag_file"
+} else {
     Write-Output "Downloading $offline_maven_url"
     Write-Output "Downloading $offline_maven_url" > $maven_flag_file
     $web_client.DownloadFile($offline_maven_url, $offline_maven_filename)
     Write-Output "Unzipping $offline_maven_filename"
-    Expand-Archive -Path $offline_maven_filename -DestinationPath "C:\Package\temp" -Force
-    Set-Location "C:\Package\temp\*"
-    robocopy .\ "C:\Package\m2" /e /move
-    # Move-Item -Path * -Destination "C:\Package\m2"
+    Expand-Archive -Path $offline_maven_filename -DestinationPath "$($output_root)temp" -Force
+    Set-Location "$($output_root)temp\*"
+    robocopy .\ "$($output_root)m2" /e /move
+    # Move-Item -Path * -Destination "$($output_root)m2"
     Set-Location $output_root
-    Remove-Item "C:\Package\temp" -Recurse -Force
-} else {
-    Write-Output "$offline_maven_filename appears to have been downloaded since $maven_flag_file exists."
-    Write-Output "Skipping operation. If this is an error, simply delete $maven_flag_file"
+    Remove-Item "$($output_root)temp" -Recurse -Force
 }
 
 Set-Location $output_root
@@ -159,12 +195,12 @@ if(!(Test-Path $gradle_folder)) {
 
 Set-Location $output_root
 Set-Location .\DepProject
-..\gradle-6.3-all\gradle-6.3\bin\gradle -D org.gradle.java.home=$javahome buildRepo
+..\gradle-6.3-all\gradle-6.3\bin\gradle -D org.gradle.java.home=$javahome buildRepo -P outputRoot="$($output_root)m2"
 # ..\gradle-6.3-all\gradle-6.3\bin\gradle -D org.gradle.java.home=$javahome --stop
 
 Set-Location $output_root
 Set-Location .\DepProjectKotlin
-..\gradle-6.3-all\gradle-6.3\bin\gradle -D org.gradle.java.home=$javahome buildRepo
+..\gradle-6.3-all\gradle-6.3\bin\gradle -D org.gradle.java.home=$javahome buildRepo -P outputRoot="$($output_root)m2"
 
 Set-Location $output_root
 if((Test-Path $android_studio_filename)) {

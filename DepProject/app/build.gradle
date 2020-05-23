@@ -27,12 +27,12 @@ android {
     }
 
 }
-mavenDependencyExport {
-    exportDir = new File("C:\\Package\\m2")
+mavenDependencyExport() {
+    exportDir = new File(outputRoot)
     systemProperties = ['java.version': '1.8']
     exportSources = true
 }
-task downloadAppDependencies {
+task downloadAppDependencies() {
     dependsOn "mavenDependencyExport"
 }
 

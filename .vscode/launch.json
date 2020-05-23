@@ -1,0 +1,24 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "create_package xsmall",
+            "type": "PowerShell",
+            "request": "launch",
+            "script": "${workspaceFolder}/create_package.ps1",
+            "cwd": "${workspaceFolder}",
+            "args": ["-small", "-output_root", "C:\\TestPackage", "-noOfflineComponents"]
+        },
+        {
+            "name": "create_package small",
+            "type": "PowerShell",
+            "request": "launch",
+            "script": "${workspaceFolder}/create_package.ps1",
+            "cwd": "${workspaceFolder}",
+            "args": ["-small", "-output_root", "C:\\TestPackage"]
+        }
+    ]
+}

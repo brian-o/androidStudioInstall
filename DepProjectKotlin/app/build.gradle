@@ -27,7 +27,7 @@ android {
 }
 
 mavenDependencyExport {
-    exportDir = new File("C:\\Package\\m2")
+    exportDir = new File(outputRoot)
     systemProperties = ['java.version': '1.8']
     exportSources = true
 }
