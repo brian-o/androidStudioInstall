@@ -120,8 +120,24 @@ if(!(Test-Path "$($output_root)Sdk")) {
 
     # only install current sdk if small is selected
     if ($small) {
-        # basic sdk install
-        "y" | & "$sdkman" --sdk_root="Sdk" "add-ons;addon-google_apis-google-24" "build-tools;29.0.3" "cmdline-tools;latest" "emulator" "extras;android;m2repository" "extras;google;google_play_services" "extras;google;instantapps" "extras;google;m2repository" "extras;google;simulators" "extras;google;usb_driver" "extras;google;webdriver" "extras;m2repository;com;android;support;constraint;constraint-layout-solver;1.0.2" "extras;m2repository;com;android;support;constraint;constraint-layout;1.0.2" "patcher;v4" "platform-tools" "platforms;android-29" "sources;android-29"
+        # basic sdk install\
+        & "$sdkman" --sdk_root="Sdk" --update
+        "yes" | & "$sdkman" --sdk_root="Sdk" "build-tools;29.0.3" 
+        "yes" | & "$sdkman" --sdk_root="Sdk" "cmdline-tools;latest" 
+        "yes" | & "$sdkman" --sdk_root="Sdk" "emulator" 
+        "yes" | & "$sdkman" --sdk_root="Sdk" "extras;android;m2repository" 
+        "yes" | & "$sdkman" --sdk_root="Sdk" "extras;google;google_play_services" 
+        "yes" | & "$sdkman" --sdk_root="Sdk" "extras;google;instantapps" 
+        "yes" | & "$sdkman" --sdk_root="Sdk" "extras;google;m2repository" 
+        "yes" | & "$sdkman" --sdk_root="Sdk" "extras;google;simulators" 
+        "yes" | & "$sdkman" --sdk_root="Sdk" "extras;google;usb_driver" 
+        "yes" | & "$sdkman" --sdk_root="Sdk" "extras;google;webdriver" 
+        "yes" | & "$sdkman" --sdk_root="Sdk" "extras;m2repository;com;android;support;constraint;constraint-layout-solver;1.0.2" 
+        "yes" | & "$sdkman" --sdk_root="Sdk" "extras;m2repository;com;android;support;constraint;constraint-layout;1.0.2" 
+        "yes" | & "$sdkman" --sdk_root="Sdk" "patcher;v4" 
+        "yes" | & "$sdkman" --sdk_root="Sdk" "platform-tools" 
+        "yes" | & "$sdkman" --sdk_root="Sdk" "platforms;android-29" 
+        "yes" | & "$sdkman" --sdk_root="Sdk" "sources;android-29"
 
     }
     else {
