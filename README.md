@@ -1,4 +1,8 @@
 # androidStudioInstall
+
+### CI Status
+![CI](https://github.com/brian-o/androidStudioInstall/workflows/CI/badge.svg)
+
 Project with scripts that can download everything needed to run android studio offline
 
 Make sure you have plenty of hard drive space (~25GB) before running this. I don't know what will happen if you don't have enough space.
