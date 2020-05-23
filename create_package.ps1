@@ -122,22 +122,22 @@ if(!(Test-Path "$($output_root)Sdk")) {
     if ($small) {
         # basic sdk install\
         & "$sdkman" --sdk_root="Sdk" --update
-        "yes" | & "$sdkman" --sdk_root="Sdk" "build-tools;29.0.3" 
-        "yes" | & "$sdkman" --sdk_root="Sdk" "cmdline-tools;latest" 
-        "yes" | & "$sdkman" --sdk_root="Sdk" "emulator" 
-        "yes" | & "$sdkman" --sdk_root="Sdk" "extras;android;m2repository" 
-        "yes" | & "$sdkman" --sdk_root="Sdk" "extras;google;google_play_services" 
-        "yes" | & "$sdkman" --sdk_root="Sdk" "extras;google;instantapps" 
-        "yes" | & "$sdkman" --sdk_root="Sdk" "extras;google;m2repository" 
-        "yes" | & "$sdkman" --sdk_root="Sdk" "extras;google;simulators" 
-        "yes" | & "$sdkman" --sdk_root="Sdk" "extras;google;usb_driver" 
-        "yes" | & "$sdkman" --sdk_root="Sdk" "extras;google;webdriver" 
-        "yes" | & "$sdkman" --sdk_root="Sdk" "extras;m2repository;com;android;support;constraint;constraint-layout-solver;1.0.2" 
-        "yes" | & "$sdkman" --sdk_root="Sdk" "extras;m2repository;com;android;support;constraint;constraint-layout;1.0.2" 
-        "yes" | & "$sdkman" --sdk_root="Sdk" "patcher;v4" 
-        "yes" | & "$sdkman" --sdk_root="Sdk" "platform-tools" 
-        "yes" | & "$sdkman" --sdk_root="Sdk" "platforms;android-29" 
-        "yes" | & "$sdkman" --sdk_root="Sdk" "sources;android-29"
+        Write-Output "y" | & "$sdkman" --sdk_root="Sdk" "build-tools;29.0.3" 
+        Write-Output "y" | & "$sdkman" --sdk_root="Sdk" "cmdline-tools;latest" 
+        Write-Output "y" | & "$sdkman" --sdk_root="Sdk" "emulator" 
+        Write-Output "y" | & "$sdkman" --sdk_root="Sdk" "extras;android;m2repository" 
+        Write-Output "y" | & "$sdkman" --sdk_root="Sdk" "extras;google;google_play_services" 
+        Write-Output "y" | & "$sdkman" --sdk_root="Sdk" "extras;google;instantapps" 
+        Write-Output "y" | & "$sdkman" --sdk_root="Sdk" "extras;google;m2repository" 
+        Write-Output "y" | & "$sdkman" --sdk_root="Sdk" "extras;google;simulators" 
+        Write-Output "y" | & "$sdkman" --sdk_root="Sdk" "extras;google;usb_driver" 
+        Write-Output "y" | & "$sdkman" --sdk_root="Sdk" "extras;google;webdriver" 
+        Write-Output "y" | & "$sdkman" --sdk_root="Sdk" "extras;m2repository;com;android;support;constraint;constraint-layout-solver;1.0.2" 
+        Write-Output "y" | & "$sdkman" --sdk_root="Sdk" "extras;m2repository;com;android;support;constraint;constraint-layout;1.0.2" 
+        Write-Output "y" | & "$sdkman" --sdk_root="Sdk" "patcher;v4" 
+        Write-Output "y" | & "$sdkman" --sdk_root="Sdk" "platform-tools" 
+        Write-Output "y" | & "$sdkman" --sdk_root="Sdk" "platforms;android-29" 
+        Write-Output "y" | & "$sdkman" --sdk_root="Sdk" "sources;android-29"
 
     }
     else {
