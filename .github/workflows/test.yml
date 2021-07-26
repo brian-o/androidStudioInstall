@@ -23,5 +23,5 @@ jobs:
     - uses: actions/checkout@v2
         
     - name: Run the clean script for testing
-      run: .\create_package.ps1 -small -Verbose
+      run: .\create_package.ps1 -small
       shell: powershell

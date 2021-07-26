@@ -52,17 +52,17 @@ begin {
       $output_root
     )
     if ($small) {
-      Write-Verbose "This run will build a small Version of sdk"
+      Write-Output "This run will build a small Version of sdk"
     } else {
-      Write-Verbose "This run will build a full verison of the sdk"
+      Write-Output "This run will build a full verison of the sdk"
     }
     if ($noOfflineComponents) {
-      Write-Verbose "This run will not download offline maven, or android gradle"
+      Write-Output "This run will not download offline maven, or android gradle"
     } else {
-      Write-Verbose "This run will download all offline components"
+      Write-Output "This run will download all offline components"
     }
 
-    Write-Verbose "This run will place the outputs in $output_root"
+    Write-Output "This run will place the outputs in $output_root"
 
     $warning_text = (
       "WARNING *******************************************************************`r`n" +
@@ -77,7 +77,7 @@ begin {
       "If you have any doubts about your package, run the cleanpc.ps1 and then delete the Package folder " +
       "End Warning **********************************************************************`r`n"
     )
-    Write-Verbose $warning_text
+    Write-Output $warning_text
     
   }
 
@@ -88,7 +88,7 @@ begin {
     if(!(Test-Path $output_root)) {
       mkdir $output_root
     } else {
-      Write-Verbose "$($output_root) already exists. Skipping..."
+      Write-Output "$($output_root) already exists. Skipping..."
     }
   }
 
@@ -96,7 +96,7 @@ begin {
     param (
       $destination
     )
-    Write-Verbose "Copy gradle projects to $destination"
+    Write-Output "Copy gradle projects to $destination"
     robocopy .\DepProject\ "$($destination)DepProject" /e
     robocopy .\DepProjectKotlin\ "$($destination)DepProjectKotlin" /e 
   }
@@ -105,11 +105,11 @@ begin {
     param (
       $destination
     )
-    Write-Verbose "Copy Install script to $destination"
+    Write-Output "Copy Install script to $destination"
     if(![System.IO.File]::Exists(".\install_package.ps1")) {
       Copy-Item -Path .\install_package.ps1 -Destination "$($destination)"
     } else {
-      Write-Verbose "install_package.ps1 already exists. Skipping..."
+      Write-Output "install_package.ps1 already exists. Skipping..."
     }
   }
 
@@ -118,7 +118,7 @@ begin {
       $destination,
       $android_studio_version
     )
-    Write-Verbose "Copying Android Studio Config to $destination"
+    Write-Output "Copying Android Studio Config to $destination"
     robocopy ".\.AndroidStudio$($android_studio_version)\" "$($destination).AndroidStudio$($android_studio_version)" /e
     # Copy-Item -Path .\.AndroidStudio3.6 -Destination "$($output_root).AndroidStudio3.6" -Recurse
   }
@@ -128,8 +128,8 @@ begin {
       $javahome
     )
     $env:JAVA_HOME = $javahome
-    Write-Verbose "JavaHome set to $env:JAVA_HOME"
-    Write-Verbose "This will not persist after this powershell session ends"
+    Write-Output "JavaHome set to $env:JAVA_HOME"
+    Write-Output "This will not persist after this powershell session ends"
   }
 
   function DownloadAndUnzipAndroidStudio {
@@ -137,12 +137,12 @@ begin {
       
     )
     if(!(Test-Path $android_studio_folder)) {
-      Write-Verbose "Downloading $android_studio_url"
+      Write-Output "Downloading $android_studio_url"
       $web_client.DownloadFile($android_studio_url, $android_studio_filename)
-      Write-Verbose "Unzipping $android_studio_filename"
+      Write-Output "Unzipping $android_studio_filename"
       Expand-Archive -Path $android_studio_filename -DestinationPath $android_studio_folder -Force
     } else {
-      Write-Verbose "$android_studio_folder already exists. skipping..."
+      Write-Output "$android_studio_folder already exists. skipping..."
     }
   }
 
@@ -170,24 +170,26 @@ begin {
       # only install current sdk if small is selected
       if ($small) {
           # basic sdk install\
-          Write-Output "Y" | & "$sdkman" --sdk_root="Sdk" --update
-          Write-Output "Y" | & "$sdkman" --sdk_root="Sdk" --licenses
-          Write-Output "Y" | & "$sdkman" --sdk_root="Sdk" "build-tools;29.0.3" 
-          Write-Output "Y" | & "$sdkman" --sdk_root="Sdk" "cmdline-tools;latest" 
-          Write-Output "Y" | & "$sdkman" --sdk_root="Sdk" "emulator" 
-          Write-Output "Y" | & "$sdkman" --sdk_root="Sdk" "extras;android;m2repository" 
-          Write-Output "Y" | & "$sdkman" --sdk_root="Sdk" "extras;google;google_play_services" 
-          Write-Output "Y" | & "$sdkman" --sdk_root="Sdk" "extras;google;instantapps" 
-          Write-Output "Y" | & "$sdkman" --sdk_root="Sdk" "extras;google;m2repository" 
-          Write-Output "Y" | & "$sdkman" --sdk_root="Sdk" "extras;google;simulators" 
-          Write-Output "Y" | & "$sdkman" --sdk_root="Sdk" "extras;google;usb_driver" 
-          Write-Output "Y" | & "$sdkman" --sdk_root="Sdk" "extras;google;webdriver" 
-          Write-Output "Y" | & "$sdkman" --sdk_root="Sdk" "extras;m2repository;com;android;support;constraint;constraint-layout-solver;1.0.2" 
-          Write-Output "Y" | & "$sdkman" --sdk_root="Sdk" "extras;m2repository;com;android;support;constraint;constraint-layout;1.0.2" 
-          Write-Output "Y" | & "$sdkman" --sdk_root="Sdk" "patcher;v4" 
-          Write-Output "Y" | & "$sdkman" --sdk_root="Sdk" "platform-tools" 
-          Write-Output "Y" | & "$sdkman" --sdk_root="Sdk" "platforms;android-29" 
-          Write-Output "Y" | & "$sdkman" --sdk_root="Sdk" "sources;android-29"
+          Write-Output "Y" > & "$sdkman" --sdk_root="Sdk" --update
+          Write-Output "Y" > & "$sdkman" --sdk_root="Sdk" --licenses
+          Write-Output "Y" > & "$sdkman" --sdk_root="Sdk" "build-tools;29.0.3" 
+          Write-Output "Y" > & "$sdkman" --sdk_root="Sdk" "cmdline-tools;latest" 
+          Write-Output "Y" > & "$sdkman" --sdk_root="Sdk" "emulator" 
+          Write-Output "Y" > & "$sdkman" --sdk_root="Sdk" "extras;android;m2repository" 
+          Write-Output "Y" > & "$sdkman" --sdk_root="Sdk" "extras;google;google_play_services" 
+          Write-Output "Y" > & "$sdkman" --sdk_root="Sdk" "extras;google;instantapps" 
+          Write-Output "Y" > & "$sdkman" --sdk_root="Sdk" "extras;google;m2repository" 
+          Write-Output "Y" > & "$sdkman" --sdk_root="Sdk" "extras;google;simulators" 
+          Write-Output "Y" > & "$sdkman" --sdk_root="Sdk" "extras;google;usb_driver" 
+          Write-Output "Y" > & "$sdkman" --sdk_root="Sdk" "extras;google;webdriver" 
+          Write-Output "Y" > & "$sdkman" --sdk_root="Sdk" "extras;m2repository;com;android;support;constraint;constraint-layout-solver;1.0.2" 
+          Write-Output "Y" > & "$sdkman" --sdk_root="Sdk" "extras;m2repository;com;android;support;constraint;constraint-layout;1.0.2" 
+          Write-Output "Y" > & "$sdkman" --sdk_root="Sdk" "patcher;v4" 
+          Write-Output "Y" > & "$sdkman" --sdk_root="Sdk" "platform-tools" 
+          Write-Output "Y" > & "$sdkman" --sdk_root="Sdk" "platforms;android-29" 
+          Write-Output "Y" > & "$sdkman" --sdk_root="Sdk" "sources;android-29"
+          Write-Output "Y" > & "$sdkman" --sdk_root="Sdk" --update
+          Write-Output "Y" > & "$sdkman" --sdk_root="Sdk" --licenses
       }
       else {
           # full sdk install so you only have to accept the set of licenses once
