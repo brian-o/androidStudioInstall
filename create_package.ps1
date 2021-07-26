@@ -40,7 +40,7 @@ begin {
   $command_line_tools_filename = $output_root + "$($command_line_tools).zip"
   $command_line_tools_folder = $output_root + "$($command_line_tools)\"
 
-  $javahome = $android_studio_folder + "\android-studio\jre"
+  $javahome = $android_studio_folder + "android-studio\jre"
 
   $web_client = New-Object System.Net.WebClient
 
@@ -159,7 +159,7 @@ begin {
       Expand-Archive -Path $command_line_tools_filename -DestinationPath $command_line_tools_folder -Force
 
       # will manually need to accept the licenses
-      $sdkman = $command_line_tools_folder + "\tools\bin\sdkmanager.bat"
+      $sdkman = $command_line_tools_folder + "cmdline-tools\bin\sdkmanager.bat"
 
       # basic sdk install
       # & "$sdkman" --sdk_root="Sdk" "add-ons;addon-google_apis-google-24" "build-tools;29.0.3" "cmdline-tools;latest" "emulator" "extras;android;m2repository" "extras;google;google_play_services" "extras;google;instantapps" "extras;google;m2repository" "extras;google;simulators" "extras;google;usb_driver" "extras;google;webdriver" "extras;m2repository;com;android;support;constraint;constraint-layout-solver;1.0.2" "extras;m2repository;com;android;support;constraint;constraint-layout;1.0.2" "patcher;v4" "platform-tools" "platforms;android-29" "sources;android-29"
@@ -170,24 +170,24 @@ begin {
       # only install current sdk if small is selected
       if ($small) {
           # basic sdk install\
-          & "$sdkman" --sdk_root="Sdk" --update
-          "y" | & "$sdkman" --sdk_root="Sdk" "build-tools;29.0.3" 
-          "y" | & "$sdkman" --sdk_root="Sdk" "cmdline-tools;latest" 
-          "y" | & "$sdkman" --sdk_root="Sdk" "emulator" 
-          "y" | & "$sdkman" --sdk_root="Sdk" "extras;android;m2repository" 
-          "y" | & "$sdkman" --sdk_root="Sdk" "extras;google;google_play_services" 
-          "y" | & "$sdkman" --sdk_root="Sdk" "extras;google;instantapps" 
-          "y" | & "$sdkman" --sdk_root="Sdk" "extras;google;m2repository" 
-          "y" | & "$sdkman" --sdk_root="Sdk" "extras;google;simulators" 
-          "y" | & "$sdkman" --sdk_root="Sdk" "extras;google;usb_driver" 
-          "y" | & "$sdkman" --sdk_root="Sdk" "extras;google;webdriver" 
-          "y" | & "$sdkman" --sdk_root="Sdk" "extras;m2repository;com;android;support;constraint;constraint-layout-solver;1.0.2" 
-          "y" | & "$sdkman" --sdk_root="Sdk" "extras;m2repository;com;android;support;constraint;constraint-layout;1.0.2" 
-          "y" | & "$sdkman" --sdk_root="Sdk" "patcher;v4" 
-          "y" | & "$sdkman" --sdk_root="Sdk" "platform-tools" 
-          "y" | & "$sdkman" --sdk_root="Sdk" "platforms;android-29" 
-          "y" | & "$sdkman" --sdk_root="Sdk" "sources;android-29"
-
+          Write-Output "Y" | & "$sdkman" --sdk_root="Sdk" --update
+          Write-Output "Y" | & "$sdkman" --sdk_root="Sdk" --licenses
+          Write-Output "Y" | & "$sdkman" --sdk_root="Sdk" "build-tools;29.0.3" 
+          Write-Output "Y" | & "$sdkman" --sdk_root="Sdk" "cmdline-tools;latest" 
+          Write-Output "Y" | & "$sdkman" --sdk_root="Sdk" "emulator" 
+          Write-Output "Y" | & "$sdkman" --sdk_root="Sdk" "extras;android;m2repository" 
+          Write-Output "Y" | & "$sdkman" --sdk_root="Sdk" "extras;google;google_play_services" 
+          Write-Output "Y" | & "$sdkman" --sdk_root="Sdk" "extras;google;instantapps" 
+          Write-Output "Y" | & "$sdkman" --sdk_root="Sdk" "extras;google;m2repository" 
+          Write-Output "Y" | & "$sdkman" --sdk_root="Sdk" "extras;google;simulators" 
+          Write-Output "Y" | & "$sdkman" --sdk_root="Sdk" "extras;google;usb_driver" 
+          Write-Output "Y" | & "$sdkman" --sdk_root="Sdk" "extras;google;webdriver" 
+          Write-Output "Y" | & "$sdkman" --sdk_root="Sdk" "extras;m2repository;com;android;support;constraint;constraint-layout-solver;1.0.2" 
+          Write-Output "Y" | & "$sdkman" --sdk_root="Sdk" "extras;m2repository;com;android;support;constraint;constraint-layout;1.0.2" 
+          Write-Output "Y" | & "$sdkman" --sdk_root="Sdk" "patcher;v4" 
+          Write-Output "Y" | & "$sdkman" --sdk_root="Sdk" "platform-tools" 
+          Write-Output "Y" | & "$sdkman" --sdk_root="Sdk" "platforms;android-29" 
+          Write-Output "Y" | & "$sdkman" --sdk_root="Sdk" "sources;android-29"
       }
       else {
           # full sdk install so you only have to accept the set of licenses once
@@ -195,8 +195,8 @@ begin {
       }
 
       # After downloading the sdk we don't need these anymore
-      Remove-Item $command_line_tools_filename
-      Remove-Item $command_line_tools_folder -Recurse
+      # Remove-Item $command_line_tools_filename
+      # Remove-Item $command_line_tools_folder -Recurse
     } else {
       Write-Output "sdk already exists. skipping..."
     }
@@ -280,12 +280,12 @@ begin {
     )
     Set-Location $output_root
     Set-Location .\DepProject
-    ..\gradle-6.3-all\gradle-6.3\bin\gradle -D org.gradle.java.home=$javahome buildRepo -P outputRoot="$($output_root)m2"
+    ..\gradle-6.3-all\gradle-6.3\bin\gradle.bat -D org.gradle.java.home=$javahome buildRepo -P outputRoot="$($output_root)m2"
     # ..\gradle-6.3-all\gradle-6.3\bin\gradle -D org.gradle.java.home=$javahome --stop
 
     Set-Location $output_root
     Set-Location .\DepProjectKotlin
-    ..\gradle-6.3-all\gradle-6.3\bin\gradle -D org.gradle.java.home=$javahome buildRepo -P outputRoot="$($output_root)m2"
+    ..\gradle-6.3-all\gradle-6.3\bin\gradle.bat -D org.gradle.java.home=$javahome buildRepo -P outputRoot="$($output_root)m2"
   }
 }
 process {

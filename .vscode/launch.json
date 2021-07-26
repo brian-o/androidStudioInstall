@@ -13,6 +13,14 @@
             "args": ["-small", "-output_root", "C:\\TestPackage", "-noOfflineComponents", "-Verbose"]
         },
         {
+          "name": "create_package xsmall-actualLocation",
+          "type": "PowerShell",
+          "request": "launch",
+          "script": "${workspaceFolder}/create_package.ps1",
+          "cwd": "${workspaceFolder}",
+          "args": ["-small", "-output_root", "C:\\Package", "-noOfflineComponents"]
+        },
+        {
             "name": "create_package small",
             "type": "PowerShell",
             "request": "launch",

@@ -3,7 +3,7 @@
 Set-Location "C:\Package\gradle-6.3-all\gradle-6.3\bin"
 
 $output_root = "C:\Package\"
-$android_studio_folder = $output_root + "android-studio-ide-192.6392135-windows"
+$android_studio_folder = $output_root + "android-studio-ide-202.7486908-windows"
 $javahome = $android_studio_folder + "\android-studio\jre"
 $env:JAVA_HOME = $javahome
 Write-Output "JavaHome set to $env:JAVA_HOME"
