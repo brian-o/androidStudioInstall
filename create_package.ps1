@@ -293,7 +293,7 @@ process {
   New-OutputDirectoryIfNeeded -output_root $output_root
   Copy-GradleProjects -destination $output_root
   Copy-InstallScript -destination $output_root
-  Copy-AndroidStudioConfiguration -destination $output_root -android_studio_version $version
+  # Copy-AndroidStudioConfiguration -destination $output_root -android_studio_version $version
   Set-TemporaryJavaHome -javahome $javahome
 
   # move to the output location
