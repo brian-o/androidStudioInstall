@@ -10,7 +10,7 @@
             "request": "launch",
             "script": "${workspaceFolder}/create_package.ps1",
             "cwd": "${workspaceFolder}",
-            "args": ["-small", "-output_root", "C:\\TestPackage", "-noOfflineComponents"]
+            "args": ["-small", "-output_root", "C:\\TestPackage", "-noOfflineComponents", "-Verbose"]
         },
         {
             "name": "create_package small",
@@ -18,7 +18,7 @@
             "request": "launch",
             "script": "${workspaceFolder}/create_package.ps1",
             "cwd": "${workspaceFolder}",
-            "args": ["-small", "-output_root", "C:\\TestPackage"]
+            "args": ["-small", "-output_root", "C:\\TestPackage", "-Verbose"]
         }
     ]
 }
