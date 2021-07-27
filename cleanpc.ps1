@@ -1,6 +1,6 @@
 # This shoudl only be run for testing. It will stop the gradle daemon and then nuke and info
 # gradle and android might have created, so we can have a fresh install
-Set-Location "C:\Package\gradle-6.3-all\gradle-6.3\bin"
+Set-Location "C:\Package\gradle-6.7.1-all\gradle-6.7.1\bin"
 
 $output_root = "C:\Package\"
 $android_studio_folder = $output_root + "android-studio-ide-202.7486908-windows"

@@ -289,12 +289,12 @@ begin {
     )
     Set-Location $output_root
     Set-Location .\DepProject
-    ..\gradle-6.3-all\gradle-6.3\bin\gradle.bat -D org.gradle.java.home=$javahome buildRepo -P outputRoot="$($output_root)m2"
+    ..\gradle-6.7.1-all\gradle-6.7.1\bin\gradle.bat -D org.gradle.java.home=$javahome buildRepo -P outputRoot="$($output_root)m2"
     # ..\gradle-6.3-all\gradle-6.3\bin\gradle -D org.gradle.java.home=$javahome --stop
 
     Set-Location $output_root
     Set-Location .\DepProjectKotlin
-    ..\gradle-6.3-all\gradle-6.3\bin\gradle.bat -D org.gradle.java.home=$javahome buildRepo -P outputRoot="$($output_root)m2"
+    ..\gradle-6.7.1-all\gradle-6.7.1\bin\gradle.bat -D org.gradle.java.home=$javahome buildRepo -P outputRoot="$($output_root)m2"
   }
 }
 process {
