@@ -1,6 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
+// apply plugin: 'kotlin-android-extensions'
 apply plugin: "com.lazan.dependency-export"
 
 android {
@@ -23,7 +23,13 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
 }
 
 mavenDependencyExport {
@@ -33,13 +39,6 @@ mavenDependencyExport {
 }
 task downloadAppDependencies {
     dependsOn "mavenDependencyExport"
-}
-compileOptions {
-    sourceCompatibility JavaVersion.VERSION_1_8
-    targetCompatibility JavaVersion.VERSION_1_8
-}
-kotlinOptions {
-    jvmTarget = '1.8'
 }
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
