@@ -20,7 +20,7 @@ begin {
   $android_studio_filename = $output_root + "$($android_studio).zip"
   $android_studio_folder = $output_root + "$($android_studio)\"
 
-  $gradle = "gradle-6.3-all"
+  $gradle = "gradle-6.7.1-all"
   $gradle_url = "https://services.gradle.org/distributions/$($gradle).zip"
   $gradle_filename = $output_root + "$($gradle).zip"
   $gradle_folder = $output_root + "$($gradle)\"
