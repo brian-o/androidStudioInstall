@@ -1,7 +1,6 @@
+apply plugin: "com.lazan.dependency-export"
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-// apply plugin: 'kotlin-android-extensions'
-apply plugin: "com.lazan.dependency-export"
 
 android {
     compileSdkVersion 30
@@ -13,7 +12,7 @@ android {
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
-
+        missingDimensionStrategy ('artifactType', 'android-java-res')
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -36,6 +35,7 @@ mavenDependencyExport {
     exportDir = new File(outputRoot)
     systemProperties = ['java.version': '1.8']
     exportSources = true
+    exportJavadoc = true
 }
 task downloadAppDependencies {
     dependsOn "mavenDependencyExport"

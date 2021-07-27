@@ -20,11 +20,16 @@ begin {
   $android_studio_filename = $output_root + "$($android_studio).zip"
   $android_studio_folder = $output_root + "$($android_studio)\"
 
-  $gradle = "gradle-6.7.1-all"
+  $gradle = "gradle-6.3-all"
   $gradle_url = "https://services.gradle.org/distributions/$($gradle).zip"
   $gradle_filename = $output_root + "$($gradle).zip"
   $gradle_folder = $output_root + "$($gradle)\"
   # $gradle = $gradle_folder + "\gradle-6.3\bin\gradle"
+
+  $gradle_new = "gradle-6.7.1-all"
+  $gradle_url_new = "https://services.gradle.org/distributions/$($gradle_new).zip"
+  $gradle_filename_new = $output_root + "$($gradle_new).zip"
+  $gradle_folder_new = $output_root + "$($gradle_new)\"
 
   $gradle_plugin_url = "https://dl.google.com/android/studio/plugins/android-gradle/preview/offline-android-gradle-plugin-preview.zip"
   $gradle_plugin_filename = $output_root + "offline-android-gradle-plugin-preview.zip"
@@ -283,17 +288,40 @@ begin {
     }
   }
 
+  function DownloadGradleNew {
+    param (
+      
+    )
+    Set-Location $output_root
+    # Now download gradle. Create a wrapper and run a task that can "build" the android project and cache the dependencies
+    if(!(Test-Path $gradle_filename_new)) {
+        Write-Output "Downloading $gradle_url_new"
+        $web_client.DownloadFile($gradle_url_new, $gradle_filename_new)
+        
+    } else {
+        Write-Output "$gradle_filename_new already exists. skipping...."
+    }
+    if(!(Test-Path $gradle_folder_new)) {
+        Write-Output "Unzipping $gradle_filename_new"
+        Expand-Archive -Path $gradle_filename_new -DestinationPath $gradle_folder_new -Force
+    } else {
+        Write-Output "$gradle_folder_new already exists. Skipping..."
+    }
+  }
+
   function BuildM2FromProjectDependencies {
     param (
       
     )
     Set-Location $output_root
     Set-Location .\DepProject
+    # ..\gradle-6.3-all\gradle-6.3\bin\gradle.bat -D org.gradle.java.home=$javahome buildRepo -P outputRoot="$($output_root)m2"
     ..\gradle-6.7.1-all\gradle-6.7.1\bin\gradle.bat -D org.gradle.java.home=$javahome buildRepo -P outputRoot="$($output_root)m2"
     # ..\gradle-6.3-all\gradle-6.3\bin\gradle -D org.gradle.java.home=$javahome --stop
 
     Set-Location $output_root
     Set-Location .\DepProjectKotlin
+    # ..\gradle-6.3-all\gradle-6.3\bin\gradle.bat -D org.gradle.java.home=$javahome buildRepo -P outputRoot="$($output_root)m2"
     ..\gradle-6.7.1-all\gradle-6.7.1\bin\gradle.bat -D org.gradle.java.home=$javahome buildRepo -P outputRoot="$($output_root)m2"
   }
 }
@@ -312,7 +340,7 @@ process {
   DownloadSdk
   # DownloadGradlePlugin
   DownloadOfflineComponents
-  DownloadGradle
+  DownloadGradleNew
   BuildM2FromProjectDependencies
 }
 end {

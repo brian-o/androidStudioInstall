@@ -25,6 +25,7 @@ mavenDependencyExport {
     exportDir = new File(outputRoot)
     systemProperties = ['java.version': '1.8']
     exportSources = true
+    exportJavadoc = true
 }
 
 task buildRepo {
