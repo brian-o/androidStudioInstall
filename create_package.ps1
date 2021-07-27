@@ -173,22 +173,25 @@ begin {
           
           Write-Output "y"| & "$sdkman" --sdk_root="Sdk\" --update
           Write-Output "y"| & "$sdkman" --sdk_root="Sdk\" --licenses
-          Write-Output "y"| & "$sdkman" --sdk_root="Sdk\" "build-tools;29.0.3" 
+          Write-Output "y"| & "$sdkman" --sdk_root="Sdk\" "build-tools;31.0.0" 
           Write-Output "y"| & "$sdkman" --sdk_root="Sdk\" "cmdline-tools;latest" 
           Write-Output "y"| & "$sdkman" --sdk_root="Sdk\" "emulator" 
-          # Write-Output "y"| & "$sdkman" --sdk_root="Sdk\" "extras;android;m2repository" 
-          # Write-Output "y"| & "$sdkman" --sdk_root="Sdk\" "extras;google;google_play_services" 
-          # Write-Output "y"| & "$sdkman" --sdk_root="Sdk\" "extras;google;instantapps" 
-          # Write-Output "y"| & "$sdkman" --sdk_root="Sdk\" "extras;google;m2repository" 
-          # Write-Output "y"| & "$sdkman" --sdk_root="Sdk\" "extras;google;simulators" 
-          # Write-Output "y"| & "$sdkman" --sdk_root="Sdk\" "extras;google;usb_driver" 
-          # Write-Output "y"| & "$sdkman" --sdk_root="Sdk\" "extras;google;webdriver" 
-          # Write-Output "y"| & "$sdkman" --sdk_root="Sdk\" "extras;m2repository;com;android;support;constraint;constraint-layout-solver;1.0.2" 
-          # Write-Output "y"| & "$sdkman" --sdk_root="Sdk\" "extras;m2repository;com;android;support;constraint;constraint-layout;1.0.2" 
+          Write-Output "y"| & "$sdkman" --sdk_root="Sdk\" "extras;android;m2repository" 
+          Write-Output "y"| & "$sdkman" --sdk_root="Sdk\" "extras;google;google_play_services" 
+          Write-Output "y"| & "$sdkman" --sdk_root="Sdk\" "extras;google;instantapps" 
+          Write-Output "y"| & "$sdkman" --sdk_root="Sdk\" "extras;google;m2repository" 
+          Write-Output "y"| & "$sdkman" --sdk_root="Sdk\" "extras;google;simulators" 
+          Write-Output "y"| & "$sdkman" --sdk_root="Sdk\" "extras;google;usb_driver" 
+          Write-Output "y"| & "$sdkman" --sdk_root="Sdk\" "extras;google;webdriver" 
+          Write-Output "y"| & "$sdkman" --sdk_root="Sdk\" "extras;intel;Hardware_Accelerated_Execution_Manager"
+          Write-Output "y"| & "$sdkman" --sdk_root="Sdk\" "extras;m2repository;com;android;support;constraint;constraint-layout-solver;1.0.2" 
+          Write-Output "y"| & "$sdkman" --sdk_root="Sdk\" "extras;m2repository;com;android;support;constraint;constraint-layout;1.0.2" 
           Write-Output "y"| & "$sdkman" --sdk_root="Sdk\" "patcher;v4" 
           Write-Output "y"| & "$sdkman" --sdk_root="Sdk\" "platform-tools" 
-          Write-Output "y"| & "$sdkman" --sdk_root="Sdk\" "platforms;android-29" 
-          Write-Output "y"| & "$sdkman" --sdk_root="Sdk\" "sources;android-29"
+          Write-Output "y"| & "$sdkman" --sdk_root="Sdk\" "platforms;android-31" 
+          Write-Output "y"| & "$sdkman" --sdk_root="Sdk\" "sources;android-31"
+          Write-Output "y"| & "$sdkman" --sdk_root="Sdk\" "skiaparser;1"
+          Write-Output "y"| & "$sdkman" --sdk_root="Sdk\" "skiaparser;2"
 
 
           robocopy "$($start_location)\licenses" "$($output_root)Sdk\licenses\" /e
@@ -308,9 +311,9 @@ process {
   DownloadAndUnzipAndroidStudio
   DownloadSdk
   # DownloadGradlePlugin
-  # DownloadOfflineComponents
-  # DownloadGradle
-  # BuildM2FromProjectDependencies
+  DownloadOfflineComponents
+  DownloadGradle
+  BuildM2FromProjectDependencies
 }
 end {
   # Cleanup
