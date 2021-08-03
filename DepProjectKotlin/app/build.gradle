@@ -60,7 +60,7 @@ task downloadAppDependencies {
     dependsOn "mavenDependencyExport"
 }
 kapt {
- correctErrorTypes true
+    correctErrorTypes true
 }
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -81,6 +81,9 @@ dependencies {
 
 
     testImplementation 'junit:junit:4.13.2'
+
+    implementation 'io.reactivex.rxjava3:rxjava:3.0.13'
+    implementation 'io.reactivex.rxjava3:rxkotlin:3.0.1'
 
 
     def lifecycle_version = "2.3.1"

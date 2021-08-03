@@ -83,9 +83,25 @@ dependencies {
 
     implementation 'org.greenrobot:eventbus:3.2.0'
 
-    implementation 'com.squareup.retrofit2:retrofit-adapters:2.8.1'
-    implementation 'com.squareup.retrofit2:retrofit-converters:2.8.1'
-    implementation 'com.squareup.retrofit2:retrofit-mock:2.8.1'
+    def retrofit_version = "2.9.0"
+    implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
+    implementation "com.squareup.retrofit2:retrofit-mock:$retrofit_version"
+    implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
+    implementation "com.squareup.retrofit2:converter-guava:$retrofit_version"
+    implementation "com.squareup.retrofit2:converter-jackson:$retrofit_version"
+    implementation "com.squareup.retrofit2:converter-java8:$retrofit_version"
+    implementation "com.squareup.retrofit2:converter-jaxb:$retrofit_version"
+    implementation "com.squareup.retrofit2:converter-moshi:$retrofit_version"
+    implementation "com.squareup.retrofit2:converter-protobuf:$retrofit_version"
+    implementation "com.squareup.retrofit2:converter-scalars:$retrofit_version"
+    implementation "com.squareup.retrofit2:converter-simplexml:$retrofit_version"
+    implementation "com.squareup.retrofit2:converter-wire:$retrofit_version"
+    implementation "com.squareup.retrofit2:adapter-guava:$retrofit_version"
+    implementation "com.squareup.retrofit2:adapter-java8:$retrofit_version"
+    implementation "com.squareup.retrofit2:adapter-rxjava:$retrofit_version"
+    implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofit_version"
+    implementation "com.squareup.retrofit2:adapter-rxjava3:$retrofit_version"
+    implementation "com.squareup.retrofit2:adapter-scala:$retrofit_version"
 
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.7'
 
@@ -244,6 +260,7 @@ dependencies {
 
     // moshi
     implementation("com.squareup.moshi:moshi:1.12.0")
+    implementation("com.squareup.moshi:moshi-adapters:1.12.0")
 
     implementation "androidx.emoji:emoji:1.1.0"
     implementation "androidx.emoji:emoji-appcompat:1.1.0"
@@ -357,8 +374,20 @@ dependencies {
     // optional - Multiprocess support
     implementation "androidx.work:work-multiprocess:$work_version"
 
+    implementation 'com.android.volley:volley:1.2.0'
 
+    implementation("com.squareup.okio:okio:2.10.0")
+    implementation(platform("com.squareup.okhttp3:okhttp-bom:4.9.1"))
+    implementation("com.squareup.okhttp3:okhttp")
+    implementation("com.squareup.okhttp3:logging-interceptor")
+    testImplementation("com.squareup.okhttp3:mockwebserver")
+    implementation("com.squareup.okhttp3:okcurl")
+    implementation("com.squareup.okhttp3:okhttp-brotli")
+    implementation("com.squareup.okhttp3:okhttp-dnsoverhttps")
+    implementation("com.squareup.okhttp3:okhttp-sse")
+    implementation("com.squareup.okhttp3:okhttp-tls")
+    implementation("com.squareup.okhttp3:okhttp-urlconnection")
 
-
+    implementation 'com.squareup.picasso:picasso:2.8'
 
 }
