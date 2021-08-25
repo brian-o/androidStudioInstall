@@ -1,5 +1,6 @@
 param (
   $destination,
+  $javaHome,
   $pathToLicenses,
   $sdkConfigPath
 )
@@ -12,7 +13,9 @@ if ($destination -notmatch '\\$') {
 $startingDir = Get-Location
 Set-Location $destination
 
-
+$env:JAVA_HOME = $javaHome
+Write-Output "JavaHome set to $env:JAVA_HOME"
+Write-Output "This will not persist after this powershell session ends"
 
 $command_line_tools = "commandlinetools-win-7302050_latest"
 $command_line_tools_url = "https://dl.google.com/android/repository/$($command_line_tools).zip"
@@ -41,6 +44,7 @@ $Jobs = @()
 # $components = Get-Content -Path "$output_root\sdkconfigs\smallsdk.conf"
 $sdkScriptBlock = {
   param(
+    $javaHome,
     $component
   )
   function Get-SdkComponent {
@@ -51,11 +55,14 @@ $sdkScriptBlock = {
     )
     Write-Output "y"| & "$sdkManager" --sdk_root=$sdkRoot $componentName
   }
+  $env:JAVA_HOME = $javaHome
+  Write-Output "JavaHome set to $env:JAVA_HOME"
+  Write-Output "This will not persist after this powershell session ends"
   Get-SdkComponent -sdkManager $sdkman -sdkRoot $sdkRoot -componentName $component
 }
 $components = Get-Content -Path "$sdkConfigPath"
 ForEach ($component in $components) {
-  $Jobs += Start-Job -ScriptBlock $sdkScriptBlock -ArgumentList $component
+  $Jobs += Start-Job -ScriptBlock $sdkScriptBlock -ArgumentList $javaHome,$component
 }
 Wait-Job -Job $Jobs
 $didJobsFail = $false

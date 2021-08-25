@@ -148,7 +148,7 @@ process {
   Set-TemporaryJavaHome -javahome $javahome
   # move to the output location
   Set-Location $output_root
-  & "$PSScriptRoot\scripts\get_sdk.ps1" -destination $output_root -pathToLicenses "$($start_location)\licenses" -sdkConfigPath "$($output_root)\sdkconfigs\smallsdk.conf"
+  & "$PSScriptRoot\scripts\get_sdk.ps1" -destination $output_root -pathToLicenses "$($start_location)\licenses" -sdkConfigPath "$($output_root)\sdkconfigs\smallsdk.conf" -javaHome $javahome
   # DownloadGradlePlugin
 
   Wait-Job $offlineComponentsJob
