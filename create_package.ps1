@@ -23,17 +23,6 @@ begin {
   $gradle_6_7 = "gradle-6.7.1"
   $gradle_7_0 = "gradle-7.0.2"
 
-  $gradle_plugin_url = "https://dl.google.com/android/studio/plugins/android-gradle/preview/offline-android-gradle-plugin-preview.zip"
-  $gradle_plugin_filename = $output_root + "offline-android-gradle-plugin-preview.zip"
-  # $gradle_plugin_folder = $output_root + "offline-android-gradle-plugin-preview\"
-
-
-  # $command_line_tools = "commandlinetools-win-6200805_latest"
-  $command_line_tools = "commandlinetools-win-7302050_latest"
-  $command_line_tools_url = "https://dl.google.com/android/repository/$($command_line_tools).zip"
-  $command_line_tools_filename = $output_root + "$($command_line_tools).zip"
-  $command_line_tools_folder = $output_root + "$($command_line_tools)\"
-
   $javahome = $android_studio_folder + "android-studio\jre"
 
   $web_client = New-Object System.Net.WebClient
@@ -86,8 +75,6 @@ begin {
     }
   }
 
-  
-
   function Set-TemporaryJavaHome {
     param (
       $javahome
@@ -95,90 +82,6 @@ begin {
     $env:JAVA_HOME = $javahome
     Write-Output "JavaHome set to $env:JAVA_HOME"
     Write-Output "This will not persist after this powershell session ends"
-  }
-
-  function Get-SdkComponent {
-    param (
-      $sdkManager,
-      [string]$componentName,
-      [string]$sdkRoot
-    )
-    Write-Output "y"| & "$sdkManager" --sdk_root=$sdkRoot $componentName
-  }
-
-  function Get-Sdk {
-    param (
-      
-    )
-    # Now download the command line tools so we can download the sdk
-    # This command should block until it is complete
-    if(!(Test-Path "$($output_root)Sdk")) {
-      Write-Output "Downloading $command_line_tools_url"
-      $web_client.DownloadFile($command_line_tools_url, $command_line_tools_filename)
-      Write-Output "Unzipping $command_line_tools_filename"
-      Expand-Archive -Path $command_line_tools_filename -DestinationPath $command_line_tools_folder -Force
-
-      # will manually need to accept the licenses
-      $sdkman = $command_line_tools_folder + "cmdline-tools\bin\sdkmanager.bat"
-
-      # basic sdk install
-      # & "$sdkman" --sdk_root="Sdk" "add-ons;addon-google_apis-google-24" "build-tools;29.0.3" "cmdline-tools;latest" "emulator" "extras;android;m2repository" "extras;google;google_play_services" "extras;google;instantapps" "extras;google;m2repository" "extras;google;simulators" "extras;google;usb_driver" "extras;google;webdriver" "extras;m2repository;com;android;support;constraint;constraint-layout-solver;1.0.2" "extras;m2repository;com;android;support;constraint;constraint-layout;1.0.2" "patcher;v4" "platform-tools" "platforms;android-29" "sources;android-29"
-
-      # extra sdk install
-      # & "$sdkman" --sdk_root="Sdk" "build-tools;24.0.3" "build-tools;30.0.0-rc2" "extras;intel;Hardware_Accelerated_Execution_Manager" "ndk-bundle" "ndk;20.1.5948944" "platforms;android-24" "platforms;android-25" "platforms;android-26" "platforms;android-27" "platforms;android-28" "platforms;android-R" "sources;android-24" "sources;android-25" "sources;android-26" "sources;android-27" "sources;android-28" "system-images;android-29;default;x86_64" "system-images;android-29;google_apis;x86_64"
-
-      # only install current sdk if small is selected
-      if ($small) {
-          # basic sdk install\
-          Write-Output "y"| & "$sdkman" --sdk_root="Sdk\" --update
-          Write-Output "y"| & "$sdkman" --sdk_root="Sdk\" --licenses
-
-          $components = Get-Content -Path "$output_root\sdkconfigs\smallsdk.conf"
-          ForEach ($component in $components) {
-            Get-SdkComponent -sdkManager $sdkman -sdkRoot $sdkRoot -componentName $component
-          }
-
-          robocopy "$($start_location)\licenses" "$($output_root)Sdk\licenses\" /e
-          Write-Output "y"| & "$sdkman" --sdk_root="Sdk\" --licenses
-          
-      }
-      else {
-          # full sdk install so you only have to accept the set of licenses once
-          & "$sdkman" --sdk_root="Sdk" "add-ons;addon-google_apis-google-24" "build-tools;29.0.3" "cmdline-tools;latest" "emulator" "extras;android;m2repository" "extras;google;google_play_services" "extras;google;instantapps" "extras;google;m2repository" "extras;google;simulators" "extras;google;usb_driver" "extras;google;webdriver" "extras;m2repository;com;android;support;constraint;constraint-layout-solver;1.0.2" "extras;m2repository;com;android;support;constraint;constraint-layout;1.0.2" "patcher;v4" "platform-tools" "platforms;android-29" "sources;android-29" "build-tools;24.0.3" "build-tools;30.0.0-rc2" "extras;intel;Hardware_Accelerated_Execution_Manager" "ndk-bundle" "ndk;20.1.5948944" "platforms;android-24" "platforms;android-25" "platforms;android-26" "platforms;android-27" "platforms;android-28" "platforms;android-R" "sources;android-24" "sources;android-25" "sources;android-26" "sources;android-27" "sources;android-28" "system-images;android-29;default;x86_64" "system-images;android-29;google_apis;x86_64"
-      }
-
-      # After downloading the sdk we don't need these anymore
-      # Remove-Item $command_line_tools_filename
-      # Remove-Item $command_line_tools_folder -Recurse
-    } else {
-      Write-Output "sdk already exists. skipping..."
-    }
-  }
-
-  function Get-GradlePlugin {
-    param (
-      
-    )
-    $plugin_flag_file = "$($output_root)plugin_downloaded.txt"
-    if($noOfflineComponents -or (Test-Path $plugin_flag_file)) {
-      if ($noOfflineComponents) {
-        Write-Output "No Offline Components flag set"
-      }
-      Write-Output "$gradle_plugin_filename appears to have been downloaded since $plugin_flag_file exists."
-      Write-Output "Skipping operation. If this is an error, simply delete $pluging_flag_file"
-    } else {
-      Write-Output "Downloading $gradle_plugin_url"
-      Write-Output "Downloading $gradle_plugin_url" > $plugin_flag_file
-      $gradlePluginWebClient = New-Object System.Net.WebClient
-      $gradlePluginWebClient.DownloadFile($gradle_plugin_url, $gradle_plugin_filename)
-      Write-Output "Unzipping $gradle_plugin_filename"
-      Expand-Archive -Path $gradle_plugin_filename -DestinationPath "$($output_root)temp" -Force
-      Set-Location "$($output_root)temp\*"
-      robocopy .\ "$($output_root)m2" /e /move
-      # Move-Item -Path * -Destination "$($output_root)m2" -Force
-      Set-Location $output_root
-      Remove-Item "$($output_root)temp" -Recurse -Force
-    }
   }
 
   function New-M2FromProjectDependencies {
@@ -216,25 +119,6 @@ begin {
     )
   }
 
-  function Copy-InitialFiles {
-    param (
-      $destination
-    )
-    Copy-GradleProjects -destination $output_root
-    Copy-InstallScript -destination $output_root
-    Copy-SdkConfigurations -destination $output_root
-  }
-
-  function Invoke-Block {
-    param (
-      $Pool,
-      $ScriptBlock
-    )
-    $PowerShell = [powershell]::Create()
-    $PowerShell.RunspacePool = $Pool
-    $PowerShell.AddScript($ScriptBlock)
-    return $PowerShell.BeginInvoke()
-  }
 }
 process {
   Write-IntroText -small $small -noOfflineComponents $noOfflineComponents -output_root $output_root
@@ -242,28 +126,38 @@ process {
 
   $Jobs = @()
   $currentLocation = Get-Location
-  $offlineComponentsJob = Start-Job -FilePath .\get_offline_components.ps1 -ArgumentList $output_root
-  $Jobs += Start-Job -FilePath .\get_android_studio.ps1 -ArgumentList $output_root,$android_studio
-  $Jobs += Start-Job -FilePath .\get_gradle.ps1 -ArgumentList $output_root,$gradle_6_7
-  $Jobs += Start-Job -FilePath .\copy_initial_files.ps1 -ArgumentList $currentLocation,$output_root
+  $offlineComponentsJob = Start-Job -FilePath .\scripts\get_offline_components.ps1 -ArgumentList $output_root
+  $Jobs += Start-Job -FilePath .\scripts\get_android_studio.ps1 -ArgumentList $output_root,$android_studio
+  $Jobs += Start-Job -FilePath .\scripts\get_gradle.ps1 -ArgumentList $output_root,$gradle_6_7
+  $Jobs += Start-Job -FilePath .\scripts\copy_initial_files.ps1 -ArgumentList $currentLocation,$output_root
 
   # Wait for all the Current Jobs
   Wait-Job -Job $Jobs
+  $didJobsFail = $false
   foreach ($job in $jobs) {
     if ($job.State -eq 'Failed') {
       Write-Host ($job.ChildJobs[0].JobStateInfo.Reason.Message) -ForegroundColor Red
+      $didJobsFail = $true
     }
+  }
+
+  if ($didJobsFail) {
+    exit -1
   }
 
   Set-TemporaryJavaHome -javahome $javahome
   # move to the output location
   Set-Location $output_root
-  Get-Sdk
+  .\scripts\get_sdk.ps1 -destination $output_root -pathToLicenses "$($start_location)licenses" -sdkConfigPath "$($output_root)\sdkconfigs\smallsdk.conf"
   # DownloadGradlePlugin
 
   Wait-Job $offlineComponentsJob
   if ($offlineComponentsJob.State -eq 'Failed') {
     Write-Host ($job.ChildJobs[0].JobStateInfo.Reason.Message) -ForegroundColor Red
+    $didJobsFail = $true
+  }
+  if ($didJobsFail) {
+    exit -1
   }
 
   # Copy-AndroidStudioConfiguration -destination $output_root -android_studio_version $version
@@ -279,9 +173,6 @@ end {
   }
   if((Test-Path $offline_maven_filename)) {
       Remove-Item $offline_maven_filename
-  }
-  if((Test-Path $gradle_plugin_filename)) {
-      Remove-Item $gradle_plugin_filename
   }
   if((Test-Path .\DepProject\)) {
       Remove-Item .\DepProject -Recurse -Force
