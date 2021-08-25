@@ -302,6 +302,25 @@ begin {
     # ..\gradle-6.3-all\gradle-6.3\bin\gradle.bat -D org.gradle.java.home=$javahome buildRepo -P outputRoot="$($output_root)m2"
     # "..\$($gradle)-all\$($gradle)\bin\gradle.bat" -D org.gradle.java.home=$javahome buildRepo -P outputRoot="$($output_root)m2"
   }
+
+  function DownloadAndroidxTracing {
+    param (
+
+    )
+    $tracing_download_url = "https://dl.google.com/dl/android/maven2/androidx/tracing/tracing/1.0.0/tracing-1.0.0.aar"
+    $tracing_destination = "C:\Package\m2\androidx\tracing\tracing\1.0.0\tracing-1.0.0.aar"
+    $web_client.DownloadFile($tracing_download_url, $tracing_destination)
+  }
+
+  function DownloadAapt2WindowsJar {
+    param (
+    )
+    $web_client.DownloadFile(
+      "https://dl.google.com/android/maven2/com/android/tools/build/aapt2/4.2.2-7147631/aapt2-4.2.2-7147631-windows.jar",
+      "C:\Package\m2\com\android\tools\build\aapt2\4.2.2-7147631\aapt2-4.2.2-7147631-windows.jar"
+    )
+  }
+
 }
 process {
   Write-IntroText -small $small -noOfflineComponents $noOfflineComponents -output_root $output_root
@@ -320,6 +339,8 @@ process {
   DownloadOfflineComponents
   DownloadGradleVersion -gradle $gradle_6_7
   BuildM2FromProjectDependencies -gradle $gradle_6_7
+  DownloadAndroidxTracing
+  DownloadAapt2WindowsJar
 }
 end {
   # Cleanup
