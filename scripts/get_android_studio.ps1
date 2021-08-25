@@ -18,4 +18,8 @@ $androidWebClient.DownloadFile($android_studio_url, $android_studio_filename)
 Write-Output "Unzipping $android_studio_filename"
 Expand-Archive -Path $android_studio_filename -DestinationPath $android_studio_folder -Force
 
+if((Test-Path $android_studio_filename)) {
+  Remove-Item $android_studio_filename
+}
+
 Set-Location $startingDir

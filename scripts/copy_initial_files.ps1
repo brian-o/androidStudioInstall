@@ -32,6 +32,14 @@ function Copy-SdkConfigurations {
   robocopy .\sdkconfigs\ "$($destination)sdkconfigs" /e
 }
 
+function Copy-Scripts {
+  param (
+    $destination
+  )
+  Write-Output "Copy scripts to $destination"
+  robocopy .\scripts\ "$($destination)scripts" /e
+}
+
 if ($destination -notmatch '\\$') {
   $destination += '\'
 }
@@ -40,5 +48,6 @@ Set-Location $sourceDir
 Copy-GradleProjects -destination $destination
 Copy-InstallScript -destination $destination
 Copy-SdkConfigurations -destination $destination
+Copy-Scripts -destination $destination
 Set-Location $startingDir
   

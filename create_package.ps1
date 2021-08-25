@@ -25,8 +25,6 @@ begin {
 
   $javahome = $android_studio_folder + "android-studio\jre"
 
-  $web_client = New-Object System.Net.WebClient
-
   # Start Function Definitions
   function Write-IntroText {
     param (
@@ -84,39 +82,26 @@ begin {
     Write-Output "This will not persist after this powershell session ends"
   }
 
-  function New-M2FromProjectDependencies {
-    param (
-      $gradle
-    )
-    Set-Location $output_root
-    Set-Location .\DepProject
-    # ..\gradle-6.3-all\gradle-6.3\bin\gradle.bat -D org.gradle.java.home=$javahome buildRepo -P outputRoot="$($output_root)m2"
-    $buildRepo = "..\$($gradle)-all\$($gradle)\bin\gradle.bat -D org.gradle.java.home=$javahome buildRepo -P outputRoot=$($output_root)m2"
-    Invoke-Expression $buildRepo
-    # ..\gradle-6.3-all\gradle-6.3\bin\gradle -D org.gradle.java.home=$javahome --stop
-
-    Set-Location $output_root
-    Set-Location .\DepProjectKotlin
-    Invoke-Expression $buildRepo
-    # ..\gradle-6.3-all\gradle-6.3\bin\gradle.bat -D org.gradle.java.home=$javahome buildRepo -P outputRoot="$($output_root)m2"
-    # "..\$($gradle)-all\$($gradle)\bin\gradle.bat" -D org.gradle.java.home=$javahome buildRepo -P outputRoot="$($output_root)m2"
-  }
-
   function Get-AndroidxTracing {
     param (
     )
     $tracing_download_url = "https://dl.google.com/dl/android/maven2/androidx/tracing/tracing/1.0.0/tracing-1.0.0.aar"
     $tracing_destination = "C:\Package\m2\androidx\tracing\tracing\1.0.0\tracing-1.0.0.aar"
-    $web_client.DownloadFile($tracing_download_url, $tracing_destination)
+    if(![System.IO.File]::Exists($tracing_destination)) {
+      $tracingWebClient = New-Object System.Net.WebClient
+      $tracingWebClient.DownloadFile($tracing_download_url, $tracing_destination)
+    }
   }
 
   function Get-Aapt2WindowsJar {
     param (
     )
-    $web_client.DownloadFile(
-      "https://dl.google.com/android/maven2/com/android/tools/build/aapt2/4.2.2-7147631/aapt2-4.2.2-7147631-windows.jar",
-      "C:\Package\m2\com\android\tools\build\aapt2\4.2.2-7147631\aapt2-4.2.2-7147631-windows.jar"
-    )
+    $aapt_url = "https://dl.google.com/android/maven2/com/android/tools/build/aapt2/4.2.2-7147631/aapt2-4.2.2-7147631-windows.jar"
+    $aapt_destination = "C:\Package\m2\com\android\tools\build\aapt2\4.2.2-7147631\aapt2-4.2.2-7147631-windows.jar"
+    if(![System.IO.File]::Exists($aapt_destination)) {
+      $aaptWebClient = New-Object System.Net.WebClient
+      $aaptWebClient.DownloadFile($aapt_url, $aapt_destination)
+    }
   }
 
 }
@@ -126,8 +111,8 @@ process {
 
   $Jobs = @()
   $currentLocation = Get-Location
-  $offlineComponentsJob = Start-Job -FilePath .\scripts\get_offline_components.ps1 -ArgumentList $output_root
   $Jobs += Start-Job -FilePath .\scripts\get_android_studio.ps1 -ArgumentList $output_root,$android_studio
+  $offlineComponentsJob = Start-Job -FilePath .\scripts\get_offline_components.ps1 -ArgumentList $output_root
   $Jobs += Start-Job -FilePath .\scripts\get_gradle.ps1 -ArgumentList $output_root,$gradle_6_7
   $Jobs += Start-Job -FilePath .\scripts\copy_initial_files.ps1 -ArgumentList $currentLocation,$output_root
 
@@ -148,8 +133,26 @@ process {
   Set-TemporaryJavaHome -javahome $javahome
   # move to the output location
   Set-Location $output_root
-  & "$PSScriptRoot\scripts\get_sdk.ps1" -destination $output_root -pathToLicenses "$($start_location)\licenses" -sdkConfigPath "$($output_root)\sdkconfigs\smallsdk.conf" -javaHome $javahome
+  & ".\scripts\get_sdk.ps1" -destination $output_root -pathToLicenses "$($start_location)\licenses" -sdkConfigPath "$($output_root)\sdkconfigs\smallsdk.conf" -javaHome $javahome
   # DownloadGradlePlugin
+
+  $gradlePath = "$($output_root)\$($gradle_6_7)-all\$($gradle_6_7)\bin\gradle.bat"
+  $m2Jobs = @()
+  $m2Jobs += Start-Job -FilePath .\scripts\build_m2_from_project.ps1 -ArgumentList $output_root,$javahome,$gradlePath,"$($output_root)DepProject"
+  $m2Jobs += Start-Job -FilePath .\scripts\build_m2_from_project.ps1 -ArgumentList $output_root,$javahome,$gradlePath,"$($output_root)DepProjectKotlin"
+  Wait-Job -Job $m2Jobs
+  foreach ($job in $m2Jobs) {
+    if ($job.State -eq 'Failed') {
+        Write-Host ($job.ChildJobs[0].JobStateInfo.Reason.Message) -ForegroundColor Red
+    } else {
+        Write-Host (Receive-Job $job) -ForegroundColor Green 
+    }
+  }
+  $stopGradle = "$($gradlePath) -D org.gradle.java.home=$javahome --stop"
+  Invoke-Expression $stopGradle
+
+  Get-AndroidxTracing
+  Get-Aapt2WindowsJar
 
   Wait-Job $offlineComponentsJob
   if ($offlineComponentsJob.State -eq 'Failed') {
@@ -159,21 +162,10 @@ process {
   if ($didJobsFail) {
     exit -1
   }
-
-  # Copy-AndroidStudioConfiguration -destination $output_root -android_studio_version $version
-  New-M2FromProjectDependencies -gradle $gradle_6_7
-  Get-AndroidxTracing
-  Get-Aapt2WindowsJar
 }
 end {
   # Cleanup
-  Set-Location $output_root
-  if((Test-Path $android_studio_filename)) {
-      Remove-Item $android_studio_filename
-  }
-  if((Test-Path $offline_maven_filename)) {
-      Remove-Item $offline_maven_filename
-  }
+  Set-Location $output_root  
   if((Test-Path .\DepProject\)) {
       Remove-Item .\DepProject -Recurse -Force
   }
@@ -182,17 +174,6 @@ end {
   }
   Set-Location $start_location
 }
-
-
-
-
-
-
-
-
-
-
-
 
 
 

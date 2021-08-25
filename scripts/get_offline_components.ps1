@@ -22,4 +22,7 @@ robocopy .\ "$($destination)m2" /e /move
 
 Set-Location $destination
 Remove-Item "$($destination)temp" -Recurse -Force
+if((Test-Path $offline_maven_filename)) {
+  Remove-Item $offline_maven_filename
+}
 Set-Location = $startingDir
