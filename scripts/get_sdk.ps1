@@ -16,14 +16,14 @@ Set-Location $destination
 $sdkRoot = "$($destination)Sdk\"
 Write-Output "Writing SDK to $sdkRoot"
 
-function Get-SdkComponent {
-  param (
-    $sdkManager,
-    [string]$componentName,
-    [string]$sdkRoot
-  )
-  Write-Output "y"| & "$sdkManager" --sdk_root=$sdkRoot $componentName
-}
+# function Get-SdkComponent {
+#   param (
+#     $sdkManager,
+#     [string]$componentName,
+#     [string]$sdkRoot
+#   )
+#   Write-Output "y"| & "$sdkManager" --sdk_root=$sdkRoot $componentName
+# }
 
 $env:JAVA_HOME = $javaHome
 Write-Output "JavaHome set to $env:JAVA_HOME"
@@ -52,9 +52,47 @@ Write-Output "y"| & "$sdkman" --sdk_root=$sdkRoot --licenses
 robocopy "$($pathToLicenses)" "$($sdkRoot)licenses\" /e
 Write-Output "y"| & "$sdkman" --sdk_root=$sdkRoot --licenses
 
+# $components = Get-Content -Path "$sdkConfigPath"
+# ForEach ($component in $components) {
+#   Get-SdkComponent -sdkManager $sdkMan -sdkRoot $sdkRoot -componentName $component
+# }
+
+$Jobs = @()
+$sdkScriptBlock = {
+  param(
+    $javaHome,
+    $sdkRoot,
+    $sdkman,
+    $component
+  )
+  function Get-SdkComponent {
+    param (
+      $sdkManager,
+      [string]$componentName,
+      [string]$sdkRoot
+    )
+    Write-Output "y"| & "$sdkManager" --sdk_root=$sdkRoot $componentName
+  }
+  $env:JAVA_HOME = $javaHome
+  Write-Output "JavaHome set to $env:JAVA_HOME"
+  Write-Output "This will not persist after this powershell session ends"
+  Get-SdkComponent -sdkManager $sdkman -sdkRoot $sdkRoot -componentName $component
+}
 $components = Get-Content -Path "$sdkConfigPath"
 ForEach ($component in $components) {
-  Get-SdkComponent -sdkManager $sdkMan -sdkRoot $sdkRoot -componentName $component
+  $Jobs += Start-Job -ScriptBlock $sdkScriptBlock -ArgumentList $javaHome,$sdkRoot,$sdkman,$component
+}
+Wait-Job -Job $Jobs
+$didJobsFail = $false
+foreach ($job in $jobs) {
+  if ($job.State -eq 'Failed') {
+    Write-Output ($job.ChildJobs[0].JobStateInfo.Reason.Message) -ForegroundColor Red
+    $didJobsFail = $true
+  }
+}
+
+if ($didJobsFail) {
+  exit -1
 }
 
 

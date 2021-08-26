@@ -86,7 +86,7 @@ begin {
     param (
     )
     $tracing_download_url = "https://dl.google.com/dl/android/maven2/androidx/tracing/tracing/1.0.0/tracing-1.0.0.aar"
-    $tracing_destination = "C:\Package\m2\androidx\tracing\tracing\1.0.0\tracing-1.0.0.aar"
+    $tracing_destination = "$($output_root)m2\androidx\tracing\tracing\1.0.0\tracing-1.0.0.aar"
     if(![System.IO.File]::Exists($tracing_destination)) {
       $tracingWebClient = New-Object System.Net.WebClient
       $tracingWebClient.DownloadFile($tracing_download_url, $tracing_destination)
@@ -97,7 +97,7 @@ begin {
     param (
     )
     $aapt_url = "https://dl.google.com/android/maven2/com/android/tools/build/aapt2/4.2.2-7147631/aapt2-4.2.2-7147631-windows.jar"
-    $aapt_destination = "C:\Package\m2\com\android\tools\build\aapt2\4.2.2-7147631\aapt2-4.2.2-7147631-windows.jar"
+    $aapt_destination = "$($output_root)m2\com\android\tools\build\aapt2\4.2.2-7147631\aapt2-4.2.2-7147631-windows.jar"
     if(![System.IO.File]::Exists($aapt_destination)) {
       $aaptWebClient = New-Object System.Net.WebClient
       $aaptWebClient.DownloadFile($aapt_url, $aapt_destination)
@@ -112,7 +112,6 @@ process {
   $Jobs = @()
   $currentLocation = Get-Location
   $Jobs += Start-Job -FilePath .\scripts\get_android_studio.ps1 -ArgumentList $output_root,$android_studio
-  $offlineComponentsJob = Start-Job -FilePath .\scripts\get_offline_components.ps1 -ArgumentList $output_root
   $Jobs += Start-Job -FilePath .\scripts\get_gradle.ps1 -ArgumentList $output_root,$gradle_6_7
   $Jobs += Start-Job -FilePath .\scripts\copy_initial_files.ps1 -ArgumentList $currentLocation,$output_root
 
@@ -121,7 +120,7 @@ process {
   $didJobsFail = $false
   foreach ($job in $jobs) {
     if ($job.State -eq 'Failed') {
-      Write-Host ($job.ChildJobs[0].JobStateInfo.Reason.Message) -ForegroundColor Red
+      Write-Output ($job.ChildJobs[0].JobStateInfo.Reason.Message) -ForegroundColor Red
       $didJobsFail = $true
     }
   }
@@ -130,24 +129,21 @@ process {
     exit -1
   }
 
+  # start offline componenents so
+  $offlineComponentsJob = Start-Job -FilePath .\scripts\get_offline_components.ps1 -ArgumentList $output_root
+
   Set-TemporaryJavaHome -javahome $javahome
   # move to the output location
   Set-Location $output_root
   & ".\scripts\get_sdk.ps1" -destination $output_root -pathToLicenses "$($start_location)\licenses" -sdkConfigPath "$($output_root)\sdkconfigs\smallsdk.conf" -javaHome $javahome
   # DownloadGradlePlugin
 
-  $gradlePath = "$($output_root)\$($gradle_6_7)-all\$($gradle_6_7)\bin\gradle.bat"
-  $m2Jobs = @()
-  $m2Jobs += Start-Job -FilePath .\scripts\build_m2_from_project.ps1 -ArgumentList $output_root,$javahome,$gradlePath,"$($output_root)DepProject"
-  $m2Jobs += Start-Job -FilePath .\scripts\build_m2_from_project.ps1 -ArgumentList $output_root,$javahome,$gradlePath,"$($output_root)DepProjectKotlin"
-  Wait-Job -Job $m2Jobs
-  foreach ($job in $m2Jobs) {
-    if ($job.State -eq 'Failed') {
-        Write-Host ($job.ChildJobs[0].JobStateInfo.Reason.Message) -ForegroundColor Red
-    } else {
-        Write-Host (Receive-Job $job) -ForegroundColor Green 
-    }
-  }
+  $gradlePath = "$($output_root)$($gradle_6_7)-all\$($gradle_6_7)\bin\gradle.bat"
+
+  & ".\scripts\build_m2_from_project.ps1" -destination $output_root -javahome $javahome -gradlePath $gradlePath -targetProjectPath "$($output_root)DepProject"
+  & ".\scripts\build_m2_from_project.ps1" -destination $output_root -javahome $javahome -gradlePath $gradlePath -targetProjectPath "$($output_root)DepProjectKotlin"
+
+
   $stopGradle = "$($gradlePath) -D org.gradle.java.home=$javahome --stop"
   Invoke-Expression $stopGradle
 
@@ -156,7 +152,7 @@ process {
 
   Wait-Job $offlineComponentsJob
   if ($offlineComponentsJob.State -eq 'Failed') {
-    Write-Host ($job.ChildJobs[0].JobStateInfo.Reason.Message) -ForegroundColor Red
+    Write-Output ($job.ChildJobs[0].JobStateInfo.Reason.Message) -ForegroundColor Red
     $didJobsFail = $true
   }
   if ($didJobsFail) {
