@@ -12,11 +12,10 @@ begin {
       $output_root += '\'
   }
   $start_location = Get-Location
-  $version = "4.2.2.0"
+
   # Declare the URLS for what we want to download here. If they need to be changed for new versions, this is the place to do so
   # $android_studio = "android-studio-ide-192.6392135-windows"
   $android_studio = "android-studio-ide-202.7486908-windows"
-  $android_studio_url = "https://redirector.gvt1.com/edgedl/android/studio/ide-zips/4.2.2.0/$($android_studio).zip"
   $android_studio_filename = $output_root + "$($android_studio).zip"
   $android_studio_folder = $output_root + "$($android_studio)\"
 
@@ -24,23 +23,7 @@ begin {
   $gradle_6_7 = "gradle-6.7.1"
   $gradle_7_0 = "gradle-7.0.2"
 
-  $gradle_plugin_url = "https://dl.google.com/android/studio/plugins/android-gradle/preview/offline-android-gradle-plugin-preview.zip"
-  $gradle_plugin_filename = $output_root + "offline-android-gradle-plugin-preview.zip"
-  # $gradle_plugin_folder = $output_root + "offline-android-gradle-plugin-preview\"
-
-  $offline_maven_url = "https://dl.google.com/android/studio/maven-google-com/stable/offline-gmaven-stable.zip"
-  $offline_maven_filename = $output_root + "offline-gmaven-stable.zip"
-  # $offline_maven_folder = $output_root + "offline-gmaven-stable\"
-
-  # $command_line_tools = "commandlinetools-win-6200805_latest"
-  $command_line_tools = "commandlinetools-win-7302050_latest"
-  $command_line_tools_url = "https://dl.google.com/android/repository/$($command_line_tools).zip"
-  $command_line_tools_filename = $output_root + "$($command_line_tools).zip"
-  $command_line_tools_folder = $output_root + "$($command_line_tools)\"
-
   $javahome = $android_studio_folder + "android-studio\jre"
-
-  $web_client = New-Object System.Net.WebClient
 
   # Start Function Definitions
   function Write-IntroText {
@@ -71,7 +54,7 @@ begin {
       "The offline maven and gradle plugin since the original files get merged into m2. " +
       "If you need those downloaded again, delete those 2 text files. " +
       "This script works best if this is the first run on a system. " +
-      "Failure to use this script properly will preven you from being able to deploy on the target machine " +
+      "Failure to use this script properly will prevent you from being able to deploy on the target machine " +
       "If you have any doubts about your package, run the cleanpc.ps1 and then delete the Package folder " +
       "End Warning **********************************************************************`r`n"
     )
@@ -90,37 +73,6 @@ begin {
     }
   }
 
-  function Copy-GradleProjects {
-    param (
-      $destination
-    )
-    Write-Output "Copy gradle projects to $destination"
-    robocopy .\DepProject\ "$($destination)DepProject" /e
-    robocopy .\DepProjectKotlin\ "$($destination)DepProjectKotlin" /e 
-  }
-
-  function Copy-InstallScript {
-    param (
-      $destination
-    )
-    Write-Output "Copy Install script to $destination"
-    if(![System.IO.File]::Exists(".\install_package.ps1")) {
-      Copy-Item -Path .\install_package.ps1 -Destination "$($destination)"
-    } else {
-      Write-Output "install_package.ps1 already exists. Skipping..."
-    }
-  }
-
-  function Copy-AndroidStudioConfiguration {
-    param (
-      $destination,
-      $android_studio_version
-    )
-    Write-Output "Copying Android Studio Config to $destination"
-    robocopy ".\.AndroidStudio$($android_studio_version)\" "$($destination).AndroidStudio$($android_studio_version)" /e
-    # Copy-Item -Path .\.AndroidStudio3.6 -Destination "$($output_root).AndroidStudio3.6" -Recurse
-  }
-
   function Set-TemporaryJavaHome {
     param (
       $javahome
@@ -130,230 +82,86 @@ begin {
     Write-Output "This will not persist after this powershell session ends"
   }
 
-  function DownloadAndUnzipAndroidStudio {
+  function Get-AndroidxTracing {
     param (
-      
-    )
-    if(!(Test-Path $android_studio_folder)) {
-      Write-Output "Downloading $android_studio_url"
-      $web_client.DownloadFile($android_studio_url, $android_studio_filename)
-      Write-Output "Unzipping $android_studio_filename"
-      Expand-Archive -Path $android_studio_filename -DestinationPath $android_studio_folder -Force
-    } else {
-      Write-Output "$android_studio_folder already exists. skipping..."
-    }
-  }
-
-  function DownloadSdk {
-    param (
-      
-    )
-    # Now download the command line tools so we can download the sdk
-    # This command should block until it is complete
-    if(!(Test-Path "$($output_root)Sdk")) {
-      Write-Output "Downloading $command_line_tools_url"
-      $web_client.DownloadFile($command_line_tools_url, $command_line_tools_filename)
-      Write-Output "Unzipping $command_line_tools_filename"
-      Expand-Archive -Path $command_line_tools_filename -DestinationPath $command_line_tools_folder -Force
-
-      # will manually need to accept the licenses
-      $sdkman = $command_line_tools_folder + "cmdline-tools\bin\sdkmanager.bat"
-
-      # basic sdk install
-      # & "$sdkman" --sdk_root="Sdk" "add-ons;addon-google_apis-google-24" "build-tools;29.0.3" "cmdline-tools;latest" "emulator" "extras;android;m2repository" "extras;google;google_play_services" "extras;google;instantapps" "extras;google;m2repository" "extras;google;simulators" "extras;google;usb_driver" "extras;google;webdriver" "extras;m2repository;com;android;support;constraint;constraint-layout-solver;1.0.2" "extras;m2repository;com;android;support;constraint;constraint-layout;1.0.2" "patcher;v4" "platform-tools" "platforms;android-29" "sources;android-29"
-
-      # extra sdk install
-      # & "$sdkman" --sdk_root="Sdk" "build-tools;24.0.3" "build-tools;30.0.0-rc2" "extras;intel;Hardware_Accelerated_Execution_Manager" "ndk-bundle" "ndk;20.1.5948944" "platforms;android-24" "platforms;android-25" "platforms;android-26" "platforms;android-27" "platforms;android-28" "platforms;android-R" "sources;android-24" "sources;android-25" "sources;android-26" "sources;android-27" "sources;android-28" "system-images;android-29;default;x86_64" "system-images;android-29;google_apis;x86_64"
-
-      # only install current sdk if small is selected
-      if ($small) {
-          # basic sdk install\
-          
-          Write-Output "y"| & "$sdkman" --sdk_root="Sdk\" --update
-          Write-Output "y"| & "$sdkman" --sdk_root="Sdk\" --licenses
-          Write-Output "y"| & "$sdkman" --sdk_root="Sdk\" "build-tools;31.0.0" 
-          Write-Output "y"| & "$sdkman" --sdk_root="Sdk\" "cmdline-tools;latest" 
-          Write-Output "y"| & "$sdkman" --sdk_root="Sdk\" "emulator" 
-          Write-Output "y"| & "$sdkman" --sdk_root="Sdk\" "extras;android;m2repository" 
-          Write-Output "y"| & "$sdkman" --sdk_root="Sdk\" "extras;google;google_play_services" 
-          Write-Output "y"| & "$sdkman" --sdk_root="Sdk\" "extras;google;instantapps" 
-          Write-Output "y"| & "$sdkman" --sdk_root="Sdk\" "extras;google;m2repository" 
-          Write-Output "y"| & "$sdkman" --sdk_root="Sdk\" "extras;google;simulators" 
-          Write-Output "y"| & "$sdkman" --sdk_root="Sdk\" "extras;google;usb_driver" 
-          Write-Output "y"| & "$sdkman" --sdk_root="Sdk\" "extras;google;webdriver" 
-          Write-Output "y"| & "$sdkman" --sdk_root="Sdk\" "extras;intel;Hardware_Accelerated_Execution_Manager"
-          Write-Output "y"| & "$sdkman" --sdk_root="Sdk\" "extras;m2repository;com;android;support;constraint;constraint-layout-solver;1.0.2" 
-          Write-Output "y"| & "$sdkman" --sdk_root="Sdk\" "extras;m2repository;com;android;support;constraint;constraint-layout;1.0.2" 
-          Write-Output "y"| & "$sdkman" --sdk_root="Sdk\" "patcher;v4" 
-          Write-Output "y"| & "$sdkman" --sdk_root="Sdk\" "platform-tools" 
-          Write-Output "y"| & "$sdkman" --sdk_root="Sdk\" "platforms;android-31" 
-          Write-Output "y"| & "$sdkman" --sdk_root="Sdk\" "sources;android-31"
-          Write-Output "y"| & "$sdkman" --sdk_root="Sdk\" "skiaparser;1"
-          Write-Output "y"| & "$sdkman" --sdk_root="Sdk\" "skiaparser;2"
-
-
-          robocopy "$($start_location)\licenses" "$($output_root)Sdk\licenses\" /e
-          Write-Output "y"| & "$sdkman" --sdk_root="Sdk\" --licenses
-          
-      }
-      else {
-          # full sdk install so you only have to accept the set of licenses once
-          & "$sdkman" --sdk_root="Sdk" "add-ons;addon-google_apis-google-24" "build-tools;29.0.3" "cmdline-tools;latest" "emulator" "extras;android;m2repository" "extras;google;google_play_services" "extras;google;instantapps" "extras;google;m2repository" "extras;google;simulators" "extras;google;usb_driver" "extras;google;webdriver" "extras;m2repository;com;android;support;constraint;constraint-layout-solver;1.0.2" "extras;m2repository;com;android;support;constraint;constraint-layout;1.0.2" "patcher;v4" "platform-tools" "platforms;android-29" "sources;android-29" "build-tools;24.0.3" "build-tools;30.0.0-rc2" "extras;intel;Hardware_Accelerated_Execution_Manager" "ndk-bundle" "ndk;20.1.5948944" "platforms;android-24" "platforms;android-25" "platforms;android-26" "platforms;android-27" "platforms;android-28" "platforms;android-R" "sources;android-24" "sources;android-25" "sources;android-26" "sources;android-27" "sources;android-28" "system-images;android-29;default;x86_64" "system-images;android-29;google_apis;x86_64"
-      }
-
-      # After downloading the sdk we don't need these anymore
-      # Remove-Item $command_line_tools_filename
-      # Remove-Item $command_line_tools_folder -Recurse
-    } else {
-      Write-Output "sdk already exists. skipping..."
-    }
-  }
-
-  function DownloadGradlePlugin {
-    param (
-      
-    )
-    $plugin_flag_file = "$($output_root)plugin_downloaded.txt"
-    if($noOfflineComponents -or (Test-Path $plugin_flag_file)) {
-      if ($noOfflineComponents) {
-        Write-Output "No Offline Components flag set"
-      }
-      Write-Output "$gradle_plugin_filename appears to have been downloaded since $plugin_flag_file exists."
-      Write-Output "Skipping operation. If this is an error, simply delete $pluging_flag_file"
-    } else {
-      Write-Output "Downloading $gradle_plugin_url"
-      Write-Output "Downloading $gradle_plugin_url" > $plugin_flag_file
-      $web_client.DownloadFile($gradle_plugin_url, $gradle_plugin_filename)
-      Write-Output "Unzipping $gradle_plugin_filename"
-      Expand-Archive -Path $gradle_plugin_filename -DestinationPath "$($output_root)temp" -Force
-      Set-Location "$($output_root)temp\*"
-      robocopy .\ "$($output_root)m2" /e /move
-      # Move-Item -Path * -Destination "$($output_root)m2" -Force
-      Set-Location $output_root
-      Remove-Item "$($output_root)temp" -Recurse -Force
-    }
-  }
-
-  function DownloadOfflineComponents {
-    param (
-      
-    )
-    Set-Location $output_root
-    $maven_flag_file = "$($output_root)maven_downloaded.txt"
-    if($noOfflineComponents -or (Test-Path $maven_flag_file)) {
-      if ($noOfflineComponents) {
-          Write-Output "No Offline Components flag set"
-      }
-      Write-Output "$offline_maven_filename appears to have been downloaded since $maven_flag_file exists."
-      Write-Output "Skipping operation. If this is an error, simply delete $maven_flag_file"
-    } else {
-      Write-Output "Downloading $offline_maven_url"
-      Write-Output "Downloading $offline_maven_url" > $maven_flag_file
-      $web_client.DownloadFile($offline_maven_url, $offline_maven_filename)
-      Write-Output "Unzipping $offline_maven_filename"
-      Expand-Archive -Path $offline_maven_filename -DestinationPath "$($output_root)temp" -Force
-      Set-Location "$($output_root)temp\*"
-      robocopy .\ "$($output_root)m2" /e /move
-      # Move-Item -Path * -Destination "$($output_root)m2"
-      Set-Location $output_root
-      Remove-Item "$($output_root)temp" -Recurse -Force
-    }
-  }
-
-  function DownloadGradleVersion {
-    param (
-      $gradle
-    )
-    $gradle_url = "https://services.gradle.org/distributions/$($gradle)-all.zip"
-    $gradle_filename = $output_root + "$($gradle)-all.zip"
-    $gradle_folder = $output_root + "$($gradle)-all\"
-
-    Set-Location $output_root
-    # Now download gradle. Create a wrapper and run a task that can "build" the android project and cache the dependencies
-    if(!(Test-Path $gradle_filename)) {
-        Write-Output "Downloading $gradle_url"
-        $web_client.DownloadFile($gradle_url, $gradle_filename)
-        
-    } else {
-        Write-Output "$gradle_filename already exists. skipping...."
-    }
-    if(!(Test-Path $gradle_folder)) {
-        Write-Output "Unzipping $gradle_filename"
-        Expand-Archive -Path $gradle_filename -DestinationPath $gradle_folder -Force
-    } else {
-        Write-Output "$gradle_folder already exists. Skipping..."
-    }
-  }
-
-  function BuildM2FromProjectDependencies {
-    param (
-      $gradle
-    )
-    Set-Location $output_root
-    Set-Location .\DepProject
-    # ..\gradle-6.3-all\gradle-6.3\bin\gradle.bat -D org.gradle.java.home=$javahome buildRepo -P outputRoot="$($output_root)m2"
-    $buildRepo = "..\$($gradle)-all\$($gradle)\bin\gradle.bat -D org.gradle.java.home=$javahome buildRepo -P outputRoot=$($output_root)m2"
-    Invoke-Expression $buildRepo
-    # ..\gradle-6.3-all\gradle-6.3\bin\gradle -D org.gradle.java.home=$javahome --stop
-
-    Set-Location $output_root
-    Set-Location .\DepProjectKotlin
-    Invoke-Expression $buildRepo
-    # ..\gradle-6.3-all\gradle-6.3\bin\gradle.bat -D org.gradle.java.home=$javahome buildRepo -P outputRoot="$($output_root)m2"
-    # "..\$($gradle)-all\$($gradle)\bin\gradle.bat" -D org.gradle.java.home=$javahome buildRepo -P outputRoot="$($output_root)m2"
-  }
-
-  function DownloadAndroidxTracing {
-    param (
-
     )
     $tracing_download_url = "https://dl.google.com/dl/android/maven2/androidx/tracing/tracing/1.0.0/tracing-1.0.0.aar"
-    $tracing_destination = "C:\Package\m2\androidx\tracing\tracing\1.0.0\tracing-1.0.0.aar"
-    $web_client.DownloadFile($tracing_download_url, $tracing_destination)
+    $tracing_destination = "$($output_root)m2\androidx\tracing\tracing\1.0.0\tracing-1.0.0.aar"
+    if(![System.IO.File]::Exists($tracing_destination)) {
+      $tracingWebClient = New-Object System.Net.WebClient
+      $tracingWebClient.DownloadFile($tracing_download_url, $tracing_destination)
+    }
   }
 
-  function DownloadAapt2WindowsJar {
+  function Get-Aapt2WindowsJar {
     param (
     )
-    $web_client.DownloadFile(
-      "https://dl.google.com/android/maven2/com/android/tools/build/aapt2/4.2.2-7147631/aapt2-4.2.2-7147631-windows.jar",
-      "C:\Package\m2\com\android\tools\build\aapt2\4.2.2-7147631\aapt2-4.2.2-7147631-windows.jar"
-    )
+    $aapt_url = "https://dl.google.com/android/maven2/com/android/tools/build/aapt2/4.2.2-7147631/aapt2-4.2.2-7147631-windows.jar"
+    $aapt_destination = "$($output_root)m2\com\android\tools\build\aapt2\4.2.2-7147631\aapt2-4.2.2-7147631-windows.jar"
+    if(![System.IO.File]::Exists($aapt_destination)) {
+      $aaptWebClient = New-Object System.Net.WebClient
+      $aaptWebClient.DownloadFile($aapt_url, $aapt_destination)
+    }
   }
 
 }
 process {
   Write-IntroText -small $small -noOfflineComponents $noOfflineComponents -output_root $output_root
   New-OutputDirectoryIfNeeded -output_root $output_root
-  Copy-GradleProjects -destination $output_root
-  Copy-InstallScript -destination $output_root
-  # Copy-AndroidStudioConfiguration -destination $output_root -android_studio_version $version
-  Set-TemporaryJavaHome -javahome $javahome
 
+  $Jobs = @()
+  $currentLocation = Get-Location
+  $Jobs += Start-Job -FilePath .\scripts\get_android_studio.ps1 -ArgumentList $output_root,$android_studio
+  $Jobs += Start-Job -FilePath .\scripts\get_gradle.ps1 -ArgumentList $output_root,$gradle_6_7
+  $Jobs += Start-Job -FilePath .\scripts\copy_initial_files.ps1 -ArgumentList $currentLocation,$output_root
+
+  # Wait for all the Current Jobs
+  Wait-Job -Job $Jobs
+  $didJobsFail = $false
+  foreach ($job in $jobs) {
+    if ($job.State -eq 'Failed') {
+      Write-Output ($job.ChildJobs[0].JobStateInfo.Reason.Message) -ForegroundColor Red
+      $didJobsFail = $true
+    }
+  }
+
+  if ($didJobsFail) {
+    exit -1
+  }
+
+  # start offline componenents so
+  $offlineComponentsJob = Start-Job -FilePath .\scripts\get_offline_components.ps1 -ArgumentList $output_root
+
+  Set-TemporaryJavaHome -javahome $javahome
   # move to the output location
   Set-Location $output_root
-
-  DownloadAndUnzipAndroidStudio
-  DownloadSdk
+  & ".\scripts\get_sdk.ps1" -destination $output_root -pathToLicenses "$($start_location)\licenses" -sdkConfigPath "$($output_root)\sdkconfigs\smallsdk.conf" -javaHome $javahome
   # DownloadGradlePlugin
-  DownloadOfflineComponents
-  DownloadGradleVersion -gradle $gradle_6_7
-  BuildM2FromProjectDependencies -gradle $gradle_6_7
-  DownloadAndroidxTracing
-  DownloadAapt2WindowsJar
+
+  $gradlePath = "$($output_root)$($gradle_6_7)-all\$($gradle_6_7)\bin\gradle.bat"
+
+  & ".\scripts\build_m2_from_project.ps1" -destination $output_root -javahome $javahome -gradlePath $gradlePath -targetProjectPath "$($output_root)DepProject"
+  & ".\scripts\build_m2_from_project.ps1" -destination $output_root -javahome $javahome -gradlePath $gradlePath -targetProjectPath "$($output_root)DepProjectKotlin"
+
+
+  $stopGradle = "$($gradlePath) -D org.gradle.java.home=$javahome --stop"
+  Invoke-Expression $stopGradle
+
+  Get-AndroidxTracing
+  Get-Aapt2WindowsJar
+
+  Wait-Job $offlineComponentsJob
+  if ($offlineComponentsJob.State -eq 'Failed') {
+    Write-Output ($job.ChildJobs[0].JobStateInfo.Reason.Message) -ForegroundColor Red
+    $didJobsFail = $true
+  }
+  if ($didJobsFail) {
+    exit -1
+  }
 }
 end {
   # Cleanup
-  Set-Location $output_root
-  if((Test-Path $android_studio_filename)) {
-      Remove-Item $android_studio_filename
-  }
-  if((Test-Path $offline_maven_filename)) {
-      Remove-Item $offline_maven_filename
-  }
-  if((Test-Path $gradle_plugin_filename)) {
-      Remove-Item $gradle_plugin_filename
-  }
+  Set-Location $output_root  
   if((Test-Path .\DepProject\)) {
       Remove-Item .\DepProject -Recurse -Force
   }
@@ -362,17 +170,6 @@ end {
   }
   Set-Location $start_location
 }
-
-
-
-
-
-
-
-
-
-
-
 
 
 
