@@ -10,6 +10,7 @@ function Copy-GradleProjects {
   Write-Output "Copy gradle projects to $destination"
   robocopy .\DepProject\ "$($destination)DepProject" /e
   robocopy .\DepProjectKotlin\ "$($destination)DepProjectKotlin" /e 
+  robocopy .\DepProjectKotlinNew\ "$($destination)DepProjectKotlinNew" /e 
 }
 
 function Copy-InstallScript {
