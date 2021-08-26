@@ -135,7 +135,14 @@ process {
   Set-TemporaryJavaHome -javahome $javahome
   # move to the output location
   Set-Location $output_root
-  & ".\scripts\get_sdk.ps1" -destination $output_root -pathToLicenses "$($start_location)\licenses" -sdkConfigPath "$($output_root)\sdkconfigs\smallsdk.conf" -javaHome $javahome
+  if ($small) {
+    # Download sdk serially in the case of only using a small sdk
+    # There wont be much of an improvement, and the likelihood of errors is higher
+    & ".\scripts\get_sdk_serial.ps1" -destination $output_root -pathToLicenses "$($start_location)\licenses" -sdkConfigPath "$($output_root)\sdkconfigs\smallsdk.conf" -javaHome $javahome
+  } else {
+    & ".\scripts\get_sdk_parallel.ps1" -destination $output_root -pathToLicenses "$($start_location)\licenses" -sdkConfigPath "$($output_root)\sdkconfigs\fullsdk.conf" -javaHome $javahome
+  }
+  
   # DownloadGradlePlugin
 
   $gradlePath = "$($output_root)$($gradle_6_7)-all\$($gradle_6_7)\bin\gradle.bat"
