@@ -65,18 +65,10 @@ $sdkScriptBlock = {
     $sdkman,
     $component
   )
-  function Get-SdkComponent {
-    param (
-      $sdkManager,
-      [string]$componentName,
-      [string]$sdkRoot
-    )
-    Write-Output "y"| & "$sdkManager" --sdk_root=$sdkRoot $componentName
-  }
   $env:JAVA_HOME = $javaHome
   Write-Output "JavaHome set to $env:JAVA_HOME"
   Write-Output "This will not persist after this powershell session ends"
-  Get-SdkComponent -sdkManager $sdkman -sdkRoot $sdkRoot -componentName $component
+  Write-Output "y"| & "$sdkManager" --sdk_root=$sdkRoot $component
 }
 $components = Get-Content -Path "$sdkConfigPath"
 ForEach ($component in $components) {

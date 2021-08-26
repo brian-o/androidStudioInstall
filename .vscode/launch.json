@@ -27,6 +27,14 @@
             "script": "${workspaceFolder}/create_package.ps1",
             "cwd": "${workspaceFolder}",
             "args": ["-small", "-output_root", "C:\\TestPackage", "-Verbose"]
-        }
+        },
+        {
+          "name": "create_package full-actualLocation",
+          "type": "PowerShell",
+          "request": "launch",
+          "script": "${workspaceFolder}/create_package.ps1",
+          "cwd": "${workspaceFolder}",
+          "args": ["-output_root", "C:\\Package"]
+        },
     ]
 }
