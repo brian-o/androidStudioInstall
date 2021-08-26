@@ -213,4 +213,11 @@ dependencies {
     compile "io.insert-koin:koin-core:$koin_version"
     // Testing
     testCompile "io.insert-koin:koin-test:$koin_version"
+
+    def arrow_version = "0.13.2"
+    implementation platform("io.arrow-kt:arrow-stack:$arrow_version")
+    implementation "io.arrow-kt:arrow-core"
+    implementation "io.arrow-kt:arrow-fx-coroutines"
+    implementation "io.arrow-kt:arrow-optics"
+    kapt "io.arrow-kt:arrow-meta"
 }
