@@ -415,4 +415,9 @@ dependencies {
 
     implementation 'com.squareup.picasso:picasso:2.8'
 
+    def vavr_version = "0.10.4"
+    implementation "io.vavr:vavr:$vavr_version"
+    implementation "io.vavr:vavr-match:$vavr_version"
+    implementation "io.vavr:vavr-test:$vavr_version"
+
 }
