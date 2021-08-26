@@ -5,20 +5,12 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "create_package xsmall",
-            "type": "PowerShell",
-            "request": "launch",
-            "script": "${workspaceFolder}/create_package.ps1",
-            "cwd": "${workspaceFolder}",
-            "args": ["-small", "-output_root", "C:\\TestPackage", "-noOfflineComponents", "-Verbose"]
-        },
-        {
-          "name": "create_package xsmall-actualLocation",
+          "name": "create_package small-actualLocation",
           "type": "PowerShell",
           "request": "launch",
           "script": "${workspaceFolder}/create_package.ps1",
           "cwd": "${workspaceFolder}",
-          "args": ["-small", "-output_root", "C:\\Package", "-noOfflineComponents"]
+          "args": ["-small", "-output_root", "C:\\Package"]
         },
         {
             "name": "create_package small",
@@ -26,7 +18,7 @@
             "request": "launch",
             "script": "${workspaceFolder}/create_package.ps1",
             "cwd": "${workspaceFolder}",
-            "args": ["-small", "-output_root", "C:\\TestPackage", "-Verbose"]
+            "args": ["-small", "-output_root", "C:\\TestPackage"]
         },
         {
           "name": "create_package full-actualLocation",

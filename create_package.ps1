@@ -1,7 +1,6 @@
 [CmdletBinding()]
 param (
     [switch]$small = $false,
-    [switch]$noOfflineComponents = $false,
     [string]$output_root = "C:\Package\",
     [switch]$test_mode = $false
 )
@@ -29,7 +28,6 @@ begin {
   function Write-IntroText {
     param (
       $small,
-      $noOfflineComponents,
       $output_root
     )
     if ($small) {
@@ -37,25 +35,18 @@ begin {
     } else {
       Write-Output "This run will build a full verison of the sdk"
     }
-    if ($noOfflineComponents) {
-      Write-Output "This run will not download offline maven, or android gradle"
-    } else {
-      Write-Output "This run will download all offline components"
-    }
 
     Write-Output "This run will place the outputs in $output_root"
 
     $warning_text = (
       "WARNING *******************************************************************`r`n" +
-      "This script checks if certain folders exists to skip having to download files multiple times. " +
+      "There are no safeties on this script use carefully as it will generate a lot of files. " +
+      "Using the full SDK takes about 20GB and the m2 is about 5GB. " +
       "If you think a file was not copmletely downloaded, make sure it is deleted or the script may not work properly. " +
       "This is especially true for the sdk. " +
-      "maven_downloaded.txt and plugin_downloaded.txt are files that exist to let the script downloading " +
-      "The offline maven and gradle plugin since the original files get merged into m2. " +
-      "If you need those downloaded again, delete those 2 text files. " +
       "This script works best if this is the first run on a system. " +
       "Failure to use this script properly will prevent you from being able to deploy on the target machine " +
-      "If you have any doubts about your package, run the cleanpc.ps1 and then delete the Package folder " +
+      "If you have any doubts about your package, delete the output root: $output_root and try again. " +
       "End Warning **********************************************************************`r`n"
     )
     Write-Output $warning_text
@@ -106,7 +97,7 @@ begin {
 
 }
 process {
-  Write-IntroText -small $small -noOfflineComponents $noOfflineComponents -output_root $output_root
+  Write-IntroText -small $small -output_root $output_root
   New-OutputDirectoryIfNeeded -output_root $output_root
 
   $Jobs = @()
@@ -149,7 +140,7 @@ process {
 
   & ".\scripts\build_m2_from_project.ps1" -destination $output_root -javahome $javahome -gradlePath $gradlePath -targetProjectPath "$($output_root)DepProject"
   & ".\scripts\build_m2_from_project.ps1" -destination $output_root -javahome $javahome -gradlePath $gradlePath -targetProjectPath "$($output_root)DepProjectKotlin"
-
+  & ".\scripts\build_m2_from_project.ps1" -destination $output_root -javahome $javahome -gradlePath $gradlePath -targetProjectPath "$($output_root)DepProjectKotlinNew"
 
   $stopGradle = "$($gradlePath) -D org.gradle.java.home=$javahome --stop"
   Invoke-Expression $stopGradle
