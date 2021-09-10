@@ -23,7 +23,10 @@ jobs:
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
-
-    - name: Build package with provided args
-      run: .\create_package.ps1 ${{ matrix.args }}
+    - name: Some Operation to keep until Github CI decides to actually work
+      run: echo "HMM"
       shell: powershell
+      
+#     - name: Build package with provided args
+#       run: .\create_package.ps1 ${{ matrix.args }}
+#       shell: powershell
