@@ -12,29 +12,21 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  buildsmall:
+  test-build:
+    strategy:
+      matrix:
+        args: ["", "-small", "-output_root C:\\AlternateLocation", "-small -output_root C:\\AlternateLocation"]
+    
     # The type of runner that the job will run on
     runs-on: windows-latest
-
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
-        
-    - name: Build a small sdk package
-      run: .\create_package.ps1 -small
+    - name: Some Operation to keep until Github CI decides to actually work
+      run: echo "HMM"
       shell: powershell
-
-  buildfull:
-    # The type of runner that the job will run on
-    runs-on: windows-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
-    steps:
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: actions/checkout@v2
-        
-    - name: Build a full sdk package
-      run: .\create_package.ps1
-      shell: powershell
+      
+#     - name: Build package with provided args
+#       run: .\create_package.ps1 ${{ matrix.args }}
+#       shell: powershell
