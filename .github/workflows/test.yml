@@ -15,7 +15,7 @@ jobs:
   test-build:
     strategy:
       matrix:
-        args: ["", "-small"]
+        args: ["", "-small", "-output_root C:\\AlternateLocation", "-small -output_root C:\\AlternateLocation"]
     
     # The type of runner that the job will run on
     runs-on: windows-latest
@@ -24,6 +24,6 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
 
-    - name: Build a small sdk package
+    - name: Build package with provided args
       run: .\create_package.ps1 ${{ matrix.args }}
       shell: powershell
